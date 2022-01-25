@@ -9,15 +9,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.fraserbell.keepfit.ui.goals.GoalsScreen
+import com.fraserbell.keepfit.ui.goals.GoalsViewModel
 import com.fraserbell.keepfit.ui.steps.StepsScreen
 
-val items = listOf(Screen.Steps)
+val items = listOf(Screen.Goals, Screen.Steps)
 
 @Composable
 fun KeepFitBottomNav() {
@@ -46,6 +51,9 @@ fun KeepFitBottomNav() {
     } ) {
         NavHost(navController, startDestination = Screen.Steps.route, Modifier.padding(it)) {
             composable(Screen.Steps.route) { StepsScreen(navController) }
+            composable(Screen.Goals.route) {
+                GoalsScreen()
+            }
         }
     }
 }
