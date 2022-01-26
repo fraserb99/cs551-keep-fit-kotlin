@@ -33,6 +33,7 @@ fun GoalsScreen(vm: GoalsViewModel = hiltViewModel()) {
     val goalToDelete = remember { mutableStateOf<Goal?>(null) }
     var addDialogVisible by remember { mutableStateOf(false) }
     var goalToEdit by remember { mutableStateOf<Goal?>(null) }
+    var currentOpenItem by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
         content = {
@@ -44,13 +45,20 @@ fun GoalsScreen(vm: GoalsViewModel = hiltViewModel()) {
                 goals.value?.forEach {
                     goal ->
                     item(goal.goalId) {
-                        GoalListItem(goal,
+                        GoalListItem(
+                            goal,
                             onEdit = {
                                 goalToEdit = goal
                             },
                             onDelete = {
                                 openDialog.value = true
                                 goalToDelete.value = goal
+                            },
+                            currentOpenItem = currentOpenItem,
+                            onSwipe = { open ->
+                                if (open) {
+                                    currentOpenItem = goal.goalId
+                                }
                             }
                         )
                         Divider()
@@ -71,11 +79,17 @@ fun GoalsScreen(vm: GoalsViewModel = hiltViewModel()) {
             AddGoalDialog(
                 visible = addDialogVisible,
                 onAdd = { goal -> vm.addGoalAsync(goal) },
-                onCancel = { addDialogVisible = false }
+                onCancel = {
+                    addDialogVisible = false
+                    currentOpenItem = null
+                }
             )
             EditGoalDialog(
                 onSave = { goal -> vm.updateGoalAsync(goal) },
-                onCancel = { goalToEdit = null },
+                onCancel = {
+                    goalToEdit = null
+                    currentOpenItem = null
+                },
                 goal = goalToEdit
             )
         },

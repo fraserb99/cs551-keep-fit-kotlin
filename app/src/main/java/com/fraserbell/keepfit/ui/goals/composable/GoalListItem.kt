@@ -8,10 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,9 +23,14 @@ import kotlin.math.roundToInt
 
 @ExperimentalMaterialApi
 @Composable
-fun GoalListItem(goal: Goal, onEdit: (goal: Goal) -> Unit, onDelete: (goal: Goal) -> Unit) {
+fun GoalListItem(
+    goal: Goal,
+    onEdit: (goal: Goal) -> Unit,
+    onDelete: (goal: Goal) -> Unit,
+    currentOpenItem: Int?,
+    onSwipe: (open: Boolean) -> Unit,
+) {
     val itemSize by remember { mutableStateOf(IntSize.Zero) }
-
     val swipeableState = rememberSwipeableState(1)
     val actionsSize = 144.dp
     val sizePx = with(LocalDensity.current) { actionsSize.toPx() }
@@ -113,6 +115,15 @@ fun GoalListItem(goal: Goal, onEdit: (goal: Goal) -> Unit, onDelete: (goal: Goal
                 )
             }
         }
+    }
+
+    LaunchedEffect(currentOpenItem) {
+        if (currentOpenItem != goal.goalId) {
+            swipeableState.animateTo(1)
+        }
+    }
+    LaunchedEffect(swipeableState.currentValue) {
+        onSwipe(swipeableState.currentValue == 0)
     }
 }
 
