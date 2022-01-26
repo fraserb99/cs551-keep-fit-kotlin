@@ -125,6 +125,11 @@ fun GoalListItem(
     LaunchedEffect(swipeableState.currentValue) {
         onSwipe(swipeableState.currentValue == 0)
     }
+    LaunchedEffect(swipeableState.offset.value) {
+        if (swipeableState.currentValue == 1) {
+            onSwipe(true)
+        }
+    }
 }
 
 @Composable
