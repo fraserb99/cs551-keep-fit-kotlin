@@ -73,7 +73,7 @@ fun GoalListItem(
                 GoalActionButton(
                     icon = Icons.Rounded.Edit,
                     onClick = { onEdit(goal) },
-                    backgroundColor = MaterialTheme.colors.primary,
+                    backgroundColor = Color(0xFF8021f3),
                     width = actionsSize / 2
                 )
                 Surface(

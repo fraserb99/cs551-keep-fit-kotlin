@@ -1,10 +1,12 @@
 package com.fraserbell.keepfit.ui.goals
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -34,13 +36,16 @@ fun GoalsScreen(vm: GoalsViewModel = hiltViewModel()) {
     var addDialogVisible by remember { mutableStateOf(false) }
     var goalToEdit by remember { mutableStateOf<Goal?>(null) }
     var currentOpenItem by remember { mutableStateOf<Int?>(null) }
+    val listState = rememberLazyListState()
 
     Scaffold(
         content = {
             LazyColumn(
                 Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                state = listState,
+
             ) {
                 goals.value?.forEach {
                     goal ->

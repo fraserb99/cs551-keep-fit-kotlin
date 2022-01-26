@@ -8,5 +8,5 @@ import androidx.room.PrimaryKey
 data class Day(
     @PrimaryKey val dayId: Int,
     val steps: Int = 0,
-    val dayGoalId: Int?
+    val stepGoal: Int?
 )

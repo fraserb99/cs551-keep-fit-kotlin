@@ -3,6 +3,7 @@ package com.fraserbell.keepfit.di
 import android.content.Context
 import androidx.room.Room
 import com.fraserbell.keepfit.data.AppDatabase
+import com.fraserbell.keepfit.data.dao.DayDao
 import com.fraserbell.keepfit.data.dao.GoalDao
 import dagger.Module
 import dagger.Provides
@@ -17,6 +18,11 @@ class DatabaseModule {
     @Provides
     fun provideGoalDao(appDatabase: AppDatabase): GoalDao {
         return appDatabase.goalDao()
+    }
+
+    @Provides
+    fun provideDayDao(appDatabase: AppDatabase): DayDao {
+        return appDatabase.dayDao()
     }
 
     @Provides
