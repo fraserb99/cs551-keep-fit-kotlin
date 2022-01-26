@@ -37,9 +37,11 @@ fun StepsScreen(navController: NavController) {
     Column(
         Modifier
             .fillMaxHeight()
-            .fillMaxWidth()) {
+            .fillMaxWidth()
+//            .background(Color(0xFFF3F3F3))
+    ) {
         Header(date = "20/01/2020")
-        StepBar(steps = 2345, goal = 10000)
+        StepBar(steps = 10000, goal = 10000)
     }
 }
 
@@ -55,6 +57,8 @@ fun Header(date: String) {
 
 @Composable
 fun StepBar(steps: Int, goal: Int) {
+    val progress = steps.toFloat() / goal
+
     Row(
         Modifier
             .fillMaxWidth()
@@ -82,19 +86,35 @@ fun StepBar(steps: Int, goal: Int) {
                         .fillMaxHeight()
                         .fillMaxWidth()
                         .rotate(180f)
-                        .background(Color(red = 0, green = 0, blue = 0, alpha = 15))
+                        .background(Color.Black.copy(0.1f))
                 ) {
                     val canvasHeight = size.height
                     val canvasWidth = size.width
-                    drawRoundRect(
-                        size = Size(height = canvasHeight * steps / goal,
+                    drawRect(
+                        size = Size(height = canvasHeight * progress,
                         width = canvasWidth),
-                        cornerRadius = CornerRadius(12.dp.toPx()),
-                        color = Color(0xFFE26D5E)
+                        color = getProgressColour(progress)
                     )
                 }
             }
             Text("%,d".format(steps), fontSize = 36.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+fun getProgressColour(progress: Float): Color {
+    return when {
+        progress >= 1 -> {
+            Color(0xFF8FD66E)
+        }
+        progress > 0.75 -> {
+            Color(0xFFE0E25E)
+        }
+        progress > 0.25 -> {
+            Color(0xFFE2A55E)
+        }
+        else -> {
+            Color(0xFFE26D5E)
         }
     }
 }

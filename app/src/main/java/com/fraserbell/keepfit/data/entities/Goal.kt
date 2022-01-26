@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class Goal(
     @PrimaryKey(autoGenerate = true) val goalId: Int = 0,
-    val name: String?,
-    val stepCount: Int
+    val stepCount: Int,
+    val name: String? = null
 )

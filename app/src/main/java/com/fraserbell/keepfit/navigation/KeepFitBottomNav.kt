@@ -22,7 +22,7 @@ import com.fraserbell.keepfit.ui.goals.GoalsScreen
 import com.fraserbell.keepfit.ui.goals.GoalsViewModel
 import com.fraserbell.keepfit.ui.steps.StepsScreen
 
-val items = listOf(Screen.Goals, Screen.Steps)
+val items = listOf(Screen.Goals, Screen.Steps, Screen.Settings)
 
 @Composable
 fun KeepFitBottomNav() {
@@ -44,7 +44,8 @@ fun KeepFitBottomNav() {
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
+                    },
+                    label = { Text(screen.title) }
                 )
             }
         }
