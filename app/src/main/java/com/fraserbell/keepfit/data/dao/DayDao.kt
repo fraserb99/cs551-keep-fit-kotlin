@@ -7,6 +7,7 @@ import androidx.room.Update
 import com.fraserbell.keepfit.data.entities.Day
 import com.fraserbell.keepfit.data.entities.DayWithGoal
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface DayDao {
@@ -17,20 +18,20 @@ interface DayDao {
     fun getAll(): Flow<List<Day>>
 
     @Query("SELECT * FROM Day WHERE dayId = :id")
-    fun getById(id: Int): Flow<Day>
+    fun getById(id: LocalDate): Flow<Day>
 
     @Update
     suspend fun update(day: Day)
 
     @Query("UPDATE Day SET steps = :steps WHERE dayId = :dayId")
-    suspend fun update(dayId: Int, steps: Int)
+    suspend fun update(dayId: LocalDate, steps: Int)
 
     @Query("UPDATE Day SET steps = steps + :steps WHERE dayId = :dayId")
-    suspend fun addSteps(dayId: Int, steps: Int)
+    suspend fun addSteps(dayId: LocalDate, steps: Int)
 
     @Query("UPDATE Day SET stepGoal = :stepGoal WHERE dayId = :dayId")
-    suspend fun updateGoal(dayId: Int, stepGoal: Int)
+    suspend fun updateGoal(dayId: LocalDate, stepGoal: Int)
 
     @Query("SELECT EXISTS(SELECT * FROM Day WHERE dayId = :dayId)")
-    suspend fun exists(dayId: Int): Boolean
+    suspend fun exists(dayId: LocalDate): Boolean
 }

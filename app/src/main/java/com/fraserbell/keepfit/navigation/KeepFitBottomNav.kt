@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.fraserbell.keepfit.data.DataTypeConverters
 import com.fraserbell.keepfit.ui.goals.GoalsScreen
 import com.fraserbell.keepfit.ui.steps.StepsScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -52,7 +53,7 @@ fun KeepFitBottomNav() {
             composable(
                 Screen.Steps.route,
                 arguments = listOf(navArgument("initialDate") { nullable = true })
-            ) { backNavigation -> StepsScreen(navController, backNavigation.arguments?.getInt("initialDate")) }
+            ) { backNavigation -> StepsScreen(navController, backNavigation.arguments?.getLong("initialDate")) }
             composable(Screen.Goals.route) {
                 GoalsScreen()
             }

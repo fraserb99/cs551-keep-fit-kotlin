@@ -46,8 +46,8 @@ fun LocalDate.getStartOfWeek(): LocalDate {
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable
-fun StepsScreen(navController: NavController, initialDate: Int?, vm: StepsViewModel = hiltViewModel()) {
-    var currentDayId by remember { mutableStateOf(initialDate ?: Date().toInt()) }
+fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewModel = hiltViewModel()) {
+    var currentDayId by remember { mutableStateOf(initialDate?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()) }
     var addDialogVisible by remember { mutableStateOf(false) }
 
     val pagerState = rememberPagerState()
@@ -108,6 +108,6 @@ fun StepsScreen(navController: NavController, initialDate: Int?, vm: StepsViewMo
     }
 
     LaunchedEffect(pagerState.currentPage) {
-        currentDayId = Date.from(Date().toInstant().minus(Duration.ofDays(pagerState.currentPage.toLong()))).toInt()
+        currentDayId = LocalDate.now().minusDays(pagerState.currentPage.toLong())
     }
 }

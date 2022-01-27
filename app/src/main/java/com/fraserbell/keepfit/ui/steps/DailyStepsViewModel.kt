@@ -6,16 +6,15 @@ import com.fraserbell.keepfit.util.toInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import java.time.Duration
+import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class DailyStepsViewModel @Inject constructor(private val stepsRepository: StepsRepository) : ViewModel() {
     fun getStepsForDayIndex(dayIndex: Int): Flow<Day> {
-        val date = Date.from(Date().toInstant().minus(Duration.ofDays(dayIndex.toLong())))
-        val dayId = date.toInt()
-        print(dayId)
+        val date = LocalDate.now().minusDays(dayIndex.toLong())
 
-        return stepsRepository.getById(dayId)
+        return stepsRepository.getById(date)
     }
 }
