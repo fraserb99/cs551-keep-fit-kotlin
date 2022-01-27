@@ -37,6 +37,8 @@ import kotlin.math.roundToInt
 @Composable
 fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewModel = hiltViewModel()) {
     var currentDayId by remember { mutableStateOf(initialDate?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()) }
+
+    var goalDialogVisible by remember { mutableStateOf(true) }
     var addDialogVisible by remember { mutableStateOf(false) }
 
     val pagerState = rememberPagerState()
@@ -76,10 +78,15 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
                 ) { page ->
                     DailyStepsPage(index = page)
                 }
-                DailyStepInfo(date = currentDayId)
+                DailyStepInfo(date = currentDayId, onSwitchGoal = { goalDialogVisible = true })
             }
         }
 
+        SwitchGoalDialog(
+            date = currentDayId,
+            visible = goalDialogVisible,
+            onCancel = { goalDialogVisible = false }
+        )
         if (addDialogVisible) {
             AddStepsDialog(
                 onSave = {

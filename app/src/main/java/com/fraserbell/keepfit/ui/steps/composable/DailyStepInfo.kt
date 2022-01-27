@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
 @ExperimentalPagerApi
 @Composable
-fun DailyStepInfo(date: LocalDate, vm: DailyStepsViewModel = hiltViewModel()) {
+fun DailyStepInfo(date: LocalDate, onSwitchGoal: () -> Unit, vm: DailyStepsViewModel = hiltViewModel()) {
     val dayWithSteps by vm.getStepsForDate(date).collectAsState(initial = null)
     val dailySteps = dayWithSteps?.dailySteps
     val goal = dayWithSteps?.goal
@@ -68,7 +68,7 @@ fun DailyStepInfo(date: LocalDate, vm: DailyStepsViewModel = hiltViewModel()) {
                     modifier = Modifier
                         .height(54.dp)
                         .width(40.dp),
-                    onClick = { /*TODO*/ },
+                    onClick = onSwitchGoal,
                     contentPadding = PaddingValues(4.dp),
                     shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), bottomStart = CornerSize(0.dp))
                 ) {

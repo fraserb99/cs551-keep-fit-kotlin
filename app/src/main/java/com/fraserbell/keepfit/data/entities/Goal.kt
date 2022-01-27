@@ -8,5 +8,5 @@ import androidx.room.PrimaryKey
 data class Goal(
     @PrimaryKey(autoGenerate = true) val goalId: Int = 0,
     val stepCount: Int,
-    val name: String? = null,
+    val name: String,
 )
