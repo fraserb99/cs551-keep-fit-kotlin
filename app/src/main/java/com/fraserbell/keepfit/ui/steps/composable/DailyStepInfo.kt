@@ -2,12 +2,14 @@ package com.fraserbell.keepfit.ui.steps.composable
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Settings
@@ -20,6 +22,9 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.fraserbell.keepfit.data.entities.DailySteps
+import com.fraserbell.keepfit.data.entities.DayWithGoal
+import com.fraserbell.keepfit.data.entities.Goal
 import com.fraserbell.keepfit.ui.steps.DailyStepsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -32,15 +37,13 @@ import kotlin.math.roundToInt
 @ExperimentalPagerApi
 @Composable
 fun DailyStepInfo(date: LocalDate, vm: DailyStepsViewModel = hiltViewModel()) {
-    val dailySteps by vm.getStepsForDate(date).collectAsState(initial = null)
+    val dayWithSteps by vm.getStepsForDate(date).collectAsState(initial = null)
+    val dailySteps = dayWithSteps?.dailySteps
+    val goal = dayWithSteps?.goal
+
 
     Column(Modifier.padding(8.dp)) {
-        Surface(
-            modifier = Modifier
-                .padding(bottom = 4.dp),
-            elevation = 8.dp,
-            shape = MaterialTheme.shapes.medium
-        ) {
+        InfoBubble {
             Row {
                 Column(
                     Modifier.padding(6.dp)
@@ -52,7 +55,7 @@ fun DailyStepInfo(date: LocalDate, vm: DailyStepsViewModel = hiltViewModel()) {
                     )
                     AnimatedContent(targetState = dailySteps) { day ->
                         Text(
-                            text = "Working"
+                            text = goal?.name?.let { goal.name }
                                 ?: run { "N/A" },
                             style = MaterialTheme.typography.h6,
                             maxLines = 1,
@@ -70,18 +73,13 @@ fun DailyStepInfo(date: LocalDate, vm: DailyStepsViewModel = hiltViewModel()) {
                     shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), bottomStart = CornerSize(0.dp))
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Menu,
+                        imageVector = if (goal != null) Icons.Rounded.Menu else Icons.Rounded.Add,
                         contentDescription = "change goal"
                     )
                 }
             }
         }
-        Surface(
-            modifier = Modifier
-                .padding(bottom = 4.dp),
-            elevation = 8.dp,
-            shape = MaterialTheme.shapes.medium
-        ) {
+        InfoBubble(visible = goal != null) {
             Column(
                 Modifier.padding(6.dp)
             ) {
@@ -90,19 +88,16 @@ fun DailyStepInfo(date: LocalDate, vm: DailyStepsViewModel = hiltViewModel()) {
                     style = MaterialTheme.typography.overline,
                     modifier = Modifier.alpha(0.72f)
                 )
-                AnimatedContent(targetState = dailySteps) { day ->
+                AnimatedContent(targetState = goal) { goalTarget ->
                     Text(
-                        text = day?.stepGoal?.let { "%,d".format(day.stepGoal) }
+                        text = goalTarget?.stepCount?.let { "%,d".format(goalTarget.stepCount) }
                             ?: run { "N/A" },
                         style = MaterialTheme.typography.h6
                     )
                 }
             }
         }
-        Surface(
-            elevation = 8.dp,
-            shape = MaterialTheme.shapes.medium
-        ) {
+        InfoBubble(visible = goal != null) {
             Column(
                 Modifier.padding(6.dp)
             ) {
@@ -111,10 +106,10 @@ fun DailyStepInfo(date: LocalDate, vm: DailyStepsViewModel = hiltViewModel()) {
                     style = MaterialTheme.typography.overline,
                     modifier = Modifier.alpha(0.72f)
                 )
-                AnimatedContent(targetState = dailySteps) { day ->
+                AnimatedContent(targetState = Pair(dailySteps, goal)) { (day, goalTarget) ->
                     Text(
-                        text = if (day?.stepGoal != null) {
-                            (day.steps.toFloat() / day.stepGoal * 100).roundToInt()
+                        text = if (goalTarget?.stepCount != null && day?.steps != null) {
+                            (day?.steps.toFloat() / goalTarget.stepCount * 100).roundToInt()
                                 .toString() + "%"
                         } else {
                             "N/A"
@@ -123,6 +118,24 @@ fun DailyStepInfo(date: LocalDate, vm: DailyStepsViewModel = hiltViewModel()) {
                     )
                 }
             }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun InfoBubble(
+    visible: Boolean = true,
+    content: @Composable() () -> Unit
+) {
+    AnimatedVisibility(visible = visible) {
+        Surface(
+            modifier = Modifier
+                .padding(bottom = 4.dp),
+            elevation = 8.dp,
+            shape = MaterialTheme.shapes.medium
+        ) {
+            content()
         }
     }
 }

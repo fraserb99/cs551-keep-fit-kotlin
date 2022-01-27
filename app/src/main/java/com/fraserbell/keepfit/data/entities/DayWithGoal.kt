@@ -1,8 +1,13 @@
 package com.fraserbell.keepfit.data.entities
 
 import androidx.room.Embedded
+import androidx.room.Relation
 
 data class DayWithGoal(
     @Embedded val dailySteps: DailySteps,
-    val goal: Goal
+    @Relation(
+        parentColumn = "dailyGoalId",
+        entityColumn = "goalId"
+    )
+    val goal: Goal?
 )

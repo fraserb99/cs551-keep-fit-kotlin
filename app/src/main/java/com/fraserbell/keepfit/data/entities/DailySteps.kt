@@ -18,6 +18,5 @@ import java.time.LocalDate
 data class DailySteps(
     @PrimaryKey val dayId: LocalDate,
     val steps: Int = 0,
-    val stepGoal: Int?,
     val dailyGoalId: Int? = null
 )

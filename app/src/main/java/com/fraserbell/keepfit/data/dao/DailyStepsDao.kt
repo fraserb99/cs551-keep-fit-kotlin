@@ -1,23 +1,23 @@
 package com.fraserbell.keepfit.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.fraserbell.keepfit.data.entities.DailySteps
+import com.fraserbell.keepfit.data.entities.DayWithGoal
+import com.fraserbell.keepfit.data.entities.Goal
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
-interface DayDao {
+interface DailyStepsDao {
     @Insert
     suspend fun insert(dailySteps: DailySteps)
 
-    @Query("SELECT * FROM dailysteps")
-    fun getAll(): Flow<List<DailySteps>>
+//    @Query("SELECT * FROM DailySteps as day join Goal as goal on goalId = dailyGoalId")
+//    fun getAll(): Flow<List<Map<DailySteps?, Goal?>>>
 
+    @Transaction
     @Query("SELECT * FROM DailySteps WHERE dayId = :id")
-    fun getById(id: LocalDate): Flow<DailySteps>
+    fun getById(id: LocalDate): Flow<DayWithGoal>
 
     @Update
     suspend fun update(dailySteps: DailySteps)

@@ -3,7 +3,7 @@ package com.fraserbell.keepfit.di
 import android.content.Context
 import androidx.room.Room
 import com.fraserbell.keepfit.data.AppDatabase
-import com.fraserbell.keepfit.data.dao.DayDao
+import com.fraserbell.keepfit.data.dao.DailyStepsDao
 import com.fraserbell.keepfit.data.dao.GoalDao
 import dagger.Module
 import dagger.Provides
@@ -21,7 +21,7 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideDayDao(appDatabase: AppDatabase): DayDao {
+    fun provideDayDao(appDatabase: AppDatabase): DailyStepsDao {
         return appDatabase.dayDao()
     }
 

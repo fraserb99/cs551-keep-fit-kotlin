@@ -9,17 +9,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.fraserbell.keepfit.data.entities.DayWithGoal
 import com.fraserbell.keepfit.ui.steps.DailyStepsViewModel
 
 @Composable
 fun DailyStepsPage(index: Int, vm: DailyStepsViewModel = hiltViewModel()) {
-    val day by vm.getStepsForDayIndex(index).collectAsState(initial = null)
+    val dayWithSteps by vm.getStepsForDayIndex(index).collectAsState(initial = null)
+    val dailySteps = dayWithSteps?.dailySteps
+    val goal = dayWithSteps?.goal
 
     Column(
         Modifier
             .fillMaxHeight()
             .fillMaxWidth()
     ) {
-        StepBar(steps = day?.steps ?: 0, goal = day?.stepGoal ?: 10000)
+        StepBar(steps = dailySteps?.steps ?: 0, goal = goal?.stepCount ?: 10000)
     }
 }

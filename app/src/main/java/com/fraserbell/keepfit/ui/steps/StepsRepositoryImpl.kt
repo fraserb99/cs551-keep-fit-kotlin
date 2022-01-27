@@ -1,22 +1,24 @@
 package com.fraserbell.keepfit.ui.steps
 
-import com.fraserbell.keepfit.data.dao.DayDao
+import com.fraserbell.keepfit.data.dao.DailyStepsDao
 import com.fraserbell.keepfit.data.entities.DailySteps
+import com.fraserbell.keepfit.data.entities.DayWithGoal
+import com.fraserbell.keepfit.data.entities.Goal
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 
-class StepsRepositoryImpl @Inject constructor(private val dayDao: DayDao) : StepsRepository {
-    override fun getById(dayId: LocalDate): Flow<DailySteps> {
-        return dayDao.getById(dayId)
+class StepsRepositoryImpl @Inject constructor(private val dailyStepsDao: DailyStepsDao) : StepsRepository {
+    override fun getById(dayId: LocalDate): Flow<DayWithGoal> {
+        return dailyStepsDao.getById(dayId)
     }
 
 
     override suspend fun addStepsToDay(dayId: LocalDate, steps: Int) {
-        if (!dayDao.exists(dayId)) {
-            dayDao.insert(DailySteps(dayId, steps, 10000))
+        if (!dailyStepsDao.exists(dayId)) {
+            dailyStepsDao.insert(DailySteps(dayId, steps))
         } else {
-            dayDao.addSteps(dayId, steps)
+            dailyStepsDao.addSteps(dayId, steps)
         }
     }
 }
