@@ -4,34 +4,33 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.fraserbell.keepfit.data.entities.Day
-import com.fraserbell.keepfit.data.entities.DayWithGoal
+import com.fraserbell.keepfit.data.entities.DailySteps
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
 interface DayDao {
     @Insert
-    suspend fun insert(day: Day)
+    suspend fun insert(dailySteps: DailySteps)
 
-    @Query("SELECT * FROM day")
-    fun getAll(): Flow<List<Day>>
+    @Query("SELECT * FROM dailysteps")
+    fun getAll(): Flow<List<DailySteps>>
 
-    @Query("SELECT * FROM Day WHERE dayId = :id")
-    fun getById(id: LocalDate): Flow<Day>
+    @Query("SELECT * FROM DailySteps WHERE dayId = :id")
+    fun getById(id: LocalDate): Flow<DailySteps>
 
     @Update
-    suspend fun update(day: Day)
+    suspend fun update(dailySteps: DailySteps)
 
-    @Query("UPDATE Day SET steps = :steps WHERE dayId = :dayId")
+    @Query("UPDATE DailySteps SET steps = :steps WHERE dayId = :dayId")
     suspend fun update(dayId: LocalDate, steps: Int)
 
-    @Query("UPDATE Day SET steps = steps + :steps WHERE dayId = :dayId")
+    @Query("UPDATE DailySteps SET steps = steps + :steps WHERE dayId = :dayId")
     suspend fun addSteps(dayId: LocalDate, steps: Int)
 
-    @Query("UPDATE Day SET stepGoal = :stepGoal WHERE dayId = :dayId")
-    suspend fun updateGoal(dayId: LocalDate, stepGoal: Int)
+    @Query("UPDATE DailySteps SET dailyGoalId = :goalId WHERE dayId = :dayId")
+    suspend fun updateGoal(dayId: LocalDate, goalId: Int)
 
-    @Query("SELECT EXISTS(SELECT * FROM Day WHERE dayId = :dayId)")
+    @Query("SELECT EXISTS(SELECT * FROM DailySteps WHERE dayId = :dayId)")
     suspend fun exists(dayId: LocalDate): Boolean
 }

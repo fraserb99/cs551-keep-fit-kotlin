@@ -1,5 +1,6 @@
 package com.fraserbell.keepfit.navigation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 
 val items = listOf(Screen.Goals, Screen.Steps, Screen.History)
 
+@ExperimentalAnimationApi
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable

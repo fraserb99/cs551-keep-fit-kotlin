@@ -1,5 +1,7 @@
 package com.fraserbell.keepfit.ui.steps
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -8,41 +10,28 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.fraserbell.keepfit.ui.steps.composable.AddStepsDialog
-import com.fraserbell.keepfit.ui.steps.composable.DailyStepsPage
-import com.fraserbell.keepfit.ui.steps.composable.DaysOfWeekTabPage
-import com.fraserbell.keepfit.ui.steps.composable.StepBar
-import com.fraserbell.keepfit.util.toInt
+import com.fraserbell.keepfit.ui.steps.composable.*
+import com.fraserbell.keepfit.util.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.flow.collect
 import java.lang.Exception
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.roundToInt
 
-fun LocalDate.getStartOfWeek(): LocalDate {
-    val date = LocalDate.from(this)
-    val dayOfWeek = date.dayOfWeek.value
-    when {
-        dayOfWeek == 1 -> {
-            return date.minusDays(6)
-        }
-        dayOfWeek > 2 -> {
-            return date.minusDays((dayOfWeek - 1).toLong())
-        }
-        else -> return date
-    }
-}
-
+@ExperimentalAnimationApi
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable
@@ -51,18 +40,9 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
     var addDialogVisible by remember { mutableStateOf(false) }
 
     val pagerState = rememberPagerState()
+    val tabPagerState = rememberPagerState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("26/01/2020") },
-                actions = {
-                    Button(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Rounded.DateRange, contentDescription = "change date")
-                    }
-                }
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { addDialogVisible = true }
@@ -73,25 +53,30 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
         floatingActionButtonPosition = FabPosition.End
     ) {
         Column {
-            HorizontalPager(count = Int.MAX_VALUE, reverseLayout = true) { page ->
-                val date = LocalDate.now().minusWeeks(page.toLong())
-                val currentDate = try {
-                    LocalDate.parse(
-                        currentDayId.toString(),
-                        DateTimeFormatter.ofPattern("yyyyMMdd")
-                    )
-                } catch (e: Exception) {
-                    LocalDate.now()
-                }
-                DaysOfWeekTabPage(startDate = date.getStartOfWeek(), currentDate = currentDate)
-            }
-            Divider()
+            TabMonthHeader(currentDayId)
             HorizontalPager(
                 count = Int.MAX_VALUE,
-                state = pagerState,
-                reverseLayout = true
+                reverseLayout = true,
+                state = tabPagerState
             ) { page ->
-                DailyStepsPage(index = page)
+                val date = LocalDate.now().minusWeeks(page.toLong())
+                DaysOfWeekTabPage(
+                    startDate = date.getStartOfWeek(),
+                    currentDate = currentDayId,
+                    onDateChange = {
+                        newDate -> currentDayId = newDate
+                    }
+                )
+            }
+            Box {
+                HorizontalPager(
+                    count = Int.MAX_VALUE,
+                    state = pagerState,
+                    reverseLayout = true
+                ) { page ->
+                    DailyStepsPage(index = page)
+                }
+                DailyStepInfo(date = currentDayId)
             }
         }
 
@@ -107,7 +92,33 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
         }
     }
 
-    LaunchedEffect(pagerState.currentPage) {
-        currentDayId = LocalDate.now().minusDays(pagerState.currentPage.toLong())
+    // sync scrollStates and currentDate
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            val date = LocalDate.now().minusDays(page.toLong())
+            currentDayId = date
+        }
+    }
+    LaunchedEffect(tabPagerState) {
+        snapshotFlow { tabPagerState.currentPage }.collect { page ->
+            val date = LocalDate.now().minusWeeks(page.toLong()).withDayOfWeek(currentDayId.getIsoDayOfWeek())
+
+            if (!date.isInSameWeek(currentDayId)) {
+                currentDayId = if (!date.isAfter(LocalDate.now())) date else LocalDate.now()
+            }
+        }
+    }
+    LaunchedEffect(currentDayId) {
+        val dayDiff = (LocalDate.now().toEpochDay() - currentDayId.toEpochDay()).toInt()
+        val weekDiff = (
+                (LocalDate.now().getStartOfWeek().plusDays(6).toEpochDay() - currentDayId.toEpochDay()) / 7
+            ).toInt()
+
+        pagerState.animateScrollToPage(
+            dayDiff
+        )
+        tabPagerState.animateScrollToPage(
+            weekDiff
+        )
     }
 }
