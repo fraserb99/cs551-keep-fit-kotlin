@@ -3,13 +3,11 @@ package com.fraserbell.keepfit.ui.steps.composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.fraserbell.keepfit.data.entities.DayWithGoal
 import com.fraserbell.keepfit.ui.steps.DailyStepsViewModel
 
 @Composable
@@ -23,6 +21,6 @@ fun DailyStepsPage(index: Int, vm: DailyStepsViewModel = hiltViewModel()) {
             .fillMaxHeight()
             .fillMaxWidth()
     ) {
-        StepBar(steps = dailySteps?.steps ?: 0, goal = goal?.stepCount ?: 10000)
+        StepBar(steps = dailySteps?.steps ?: 0, goal = goal?.stepGoal ?: 10000)
     }
 }

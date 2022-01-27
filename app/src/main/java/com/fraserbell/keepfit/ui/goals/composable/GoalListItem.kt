@@ -110,7 +110,7 @@ fun GoalListItem(
             ) {
                 ListItem(
                     icon = { Icon(imageVector = Icons.Rounded.Star, contentDescription = "") },
-                    text = { Text("%,d".format(goal.stepCount)) },
+                    text = { Text("%,d".format(goal.stepGoal)) },
                     secondaryText = { if (goal.name != null) { Text(goal.name) }},
                 )
             }

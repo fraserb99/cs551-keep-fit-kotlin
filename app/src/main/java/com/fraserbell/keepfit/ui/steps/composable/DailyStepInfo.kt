@@ -33,14 +33,12 @@ import java.time.LocalDate
 import kotlin.math.roundToInt
 
 @ExperimentalAnimationApi
-@SuppressLint("UnusedCrossfadeTargetStateParameter")
 @ExperimentalPagerApi
 @Composable
 fun DailyStepInfo(date: LocalDate, onSwitchGoal: () -> Unit, vm: DailyStepsViewModel = hiltViewModel()) {
     val dayWithSteps by vm.getStepsForDate(date).collectAsState(initial = null)
     val dailySteps = dayWithSteps?.dailySteps
     val goal = dayWithSteps?.goal
-
 
     Column(Modifier.padding(8.dp)) {
         InfoBubble {
@@ -90,7 +88,7 @@ fun DailyStepInfo(date: LocalDate, onSwitchGoal: () -> Unit, vm: DailyStepsViewM
                 )
                 AnimatedContent(targetState = goal) { goalTarget ->
                     Text(
-                        text = goalTarget?.stepCount?.let { "%,d".format(goalTarget.stepCount) }
+                        text = goalTarget?.stepGoal?.let { "%,d".format(goalTarget.stepGoal) }
                             ?: run { "N/A" },
                         style = MaterialTheme.typography.h6
                     )
@@ -108,8 +106,8 @@ fun DailyStepInfo(date: LocalDate, onSwitchGoal: () -> Unit, vm: DailyStepsViewM
                 )
                 AnimatedContent(targetState = Pair(dailySteps, goal)) { (day, goalTarget) ->
                     Text(
-                        text = if (goalTarget?.stepCount != null && day?.steps != null) {
-                            (day?.steps.toFloat() / goalTarget.stepCount * 100).roundToInt()
+                        text = if (goalTarget?.stepGoal != null && day?.steps != null) {
+                            (day.steps.toFloat() / goalTarget.stepGoal * 100).roundToInt()
                                 .toString() + "%"
                         } else {
                             "N/A"

@@ -17,9 +17,9 @@ fun AddGoalDialog(visible: Boolean, onAdd: (goal: Goal) -> Deferred<Unit>, onCan
     if (visible) {
         GoalFormDialog(
             title = "Add Goal",
-            onSave = { stepCount ->
+            onSave = { values ->
                 scope.launch {
-                    val goal = Goal(stepCount = stepCount)
+                    val goal = Goal(stepGoal = values.stepGoal, name = values.name)
                     try {
                         onAdd(goal).await()
                         onCancel()
@@ -32,8 +32,7 @@ fun AddGoalDialog(visible: Boolean, onAdd: (goal: Goal) -> Deferred<Unit>, onCan
                     }
                 }
             },
-            onCancel = onCancel,
-            initialValue = null
+            onCancel = onCancel
         )
     }
 }

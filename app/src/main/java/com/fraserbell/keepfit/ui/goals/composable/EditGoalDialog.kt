@@ -21,10 +21,10 @@ fun EditGoalDialog(
     if (goal != null) {
         GoalFormDialog(
             title = "Add Goal",
-            onSave = { stepCount ->
+            onSave = { values ->
                 scope.launch {
                     try {
-                        val updated = Goal(goalId = goal.goalId, stepCount = stepCount)
+                        val updated = Goal(goalId = goal.goalId, name = values.name, stepGoal = values.stepGoal)
                         onSave(updated).await()
                         onCancel()
                     } catch (e: Exception) {
@@ -37,7 +37,7 @@ fun EditGoalDialog(
                 }
             },
             onCancel = onCancel,
-            initialValue = goal.stepCount
+            initialValues = GoalFormValues(goal.name, goal.stepGoal)
         )
     }
 }

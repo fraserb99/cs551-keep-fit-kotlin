@@ -15,16 +15,25 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+data class GoalFormValues(
+    val name: String,
+    val stepGoal: Int
+)
+
 @Composable
 fun GoalFormDialog(
     title: String,
-    initialValue: Int?,
-    onSave: (value: Int) -> Unit,
+    initialValues: GoalFormValues = GoalFormValues("", 0),
+    onSave: (values: GoalFormValues) -> Unit,
     onCancel: () -> Unit
 ) {
-    val stepStringVal = initialValue?.toString() ?: ""
+    var nameFieldValue by remember { mutableStateOf(TextFieldValue(initialValues.name, TextRange(initialValues.name.length))) }
+    var nameFieldError by remember { mutableStateOf<String?>(null) }
+
+    val stepStringVal = initialValues.stepGoal?.toString() ?: ""
     var stepValue by remember { mutableStateOf(TextFieldValue(stepStringVal, TextRange(stepStringVal.length))) }
     var stepFieldError by remember { mutableStateOf<String?>(null) }
+
     val focusRequester = remember { FocusRequester() }
 
     val onSubmit: () -> Unit = {
@@ -38,12 +47,21 @@ fun GoalFormDialog(
             }
             intStepValue > 100000 -> {
                 stepFieldError = "Please enter a goal of less than 100,000 steps"
-            }
-            else -> {
-                onSave(intStepValue)
+            } else -> {
+                stepFieldError = null
             }
         }
 
+        when {
+            nameFieldValue.text.isEmpty() -> {
+                nameFieldError = "Please enter a name for the Goal"
+            }
+            else -> nameFieldError = null
+        }
+
+        if (stepFieldError == null && nameFieldError == null && intStepValue != null) {
+            onSave(GoalFormValues(nameFieldValue.text, intStepValue))
+        }
     }
 
     AlertDialog(
@@ -52,13 +70,27 @@ fun GoalFormDialog(
         text = {
             Column(Modifier.padding(top = 8.dp)) {
                 TextField(
+                    value = nameFieldValue, onValueChange = { nameFieldValue = it },
+                    label = { Text(text = "Name") },
+                    isError = nameFieldError != null,
+                    keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+                    singleLine = true,
+                    modifier = Modifier.focusRequester(focusRequester)
+                )
+                nameFieldError?.let { error ->
+                    Text(
+                        error,
+                        style = MaterialTheme.typography.caption,
+                        color = MaterialTheme.colors.error
+                    )
+                }
+                TextField(
                     value = stepValue, onValueChange = { stepValue = it },
                     label = { Text(text = "Step Goal") },
                     isError = stepFieldError != null,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onDone = { onSubmit() }),
                     singleLine = true,
-                    modifier = Modifier.focusRequester(focusRequester)
                 )
                 stepFieldError?.let { error ->
                     Text(
