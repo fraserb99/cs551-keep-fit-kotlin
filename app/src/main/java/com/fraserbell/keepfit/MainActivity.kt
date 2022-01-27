@@ -14,10 +14,12 @@ import com.fraserbell.keepfit.data.entities.Goal
 import com.fraserbell.keepfit.navigation.KeepFitBottomNav
 import com.fraserbell.keepfit.ui.goals.GoalsViewModel
 import com.fraserbell.keepfit.ui.theme.KeepFitTheme
+import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @ExperimentalPagerApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

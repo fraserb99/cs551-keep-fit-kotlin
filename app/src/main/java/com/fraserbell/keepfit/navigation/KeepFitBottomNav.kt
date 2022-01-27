@@ -14,9 +14,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.fraserbell.keepfit.ui.goals.GoalsScreen
 import com.fraserbell.keepfit.ui.steps.StepsScreen
+import com.google.accompanist.pager.ExperimentalPagerApi
 
 val items = listOf(Screen.Goals, Screen.Steps, Screen.History)
 
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable
 fun KeepFitBottomNav() {
