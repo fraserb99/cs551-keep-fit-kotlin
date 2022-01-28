@@ -20,4 +20,8 @@ class DailyStepsViewModel @Inject constructor(private val stepsRepository: Steps
 
         return stepsRepository.getById(date)
     }
+
+    suspend fun updateDailyGoal(dayId: LocalDate, goalId: Int) {
+        stepsRepository.updateDailyGoal(dayId, goalId)
+    }
 }

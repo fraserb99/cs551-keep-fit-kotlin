@@ -38,7 +38,7 @@ import kotlin.math.roundToInt
 fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewModel = hiltViewModel()) {
     var currentDayId by remember { mutableStateOf(initialDate?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()) }
 
-    var goalDialogVisible by remember { mutableStateOf(true) }
+    var goalDialogVisible by remember { mutableStateOf(false) }
     var addDialogVisible by remember { mutableStateOf(false) }
 
     val pagerState = rememberPagerState()

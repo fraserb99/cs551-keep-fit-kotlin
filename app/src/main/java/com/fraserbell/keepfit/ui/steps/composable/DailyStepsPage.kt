@@ -21,6 +21,6 @@ fun DailyStepsPage(index: Int, vm: DailyStepsViewModel = hiltViewModel()) {
             .fillMaxHeight()
             .fillMaxWidth()
     ) {
-        StepBar(steps = dailySteps?.steps ?: 0, goal = goal?.stepGoal ?: 10000)
+        StepBar(steps = dailySteps?.steps ?: 0, goal = goal?.stepGoal)
     }
 }

@@ -21,4 +21,12 @@ class StepsRepositoryImpl @Inject constructor(private val dailyStepsDao: DailySt
             dailyStepsDao.addSteps(dayId, steps)
         }
     }
+
+    override suspend fun updateDailyGoal(dayId: LocalDate, goalId: Int) {
+        if (!dailyStepsDao.exists(dayId)) {
+            dailyStepsDao.insert(DailySteps(dayId, 0, goalId))
+        } else {
+            dailyStepsDao.updateGoal(dayId, goalId)
+        }
+    }
 }

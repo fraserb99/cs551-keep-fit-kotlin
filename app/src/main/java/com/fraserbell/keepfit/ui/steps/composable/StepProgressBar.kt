@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun StepBar(steps: Int, goal: Int) {
-    val progress = steps.toFloat() / goal
+fun StepBar(steps: Int, goal: Int?) {
+    val progress = goal?.let { steps.toFloat() / goal } ?: 0f
 
     Row(
         Modifier
@@ -60,7 +60,14 @@ fun StepBar(steps: Int, goal: Int) {
                 }
             }
             Text("%,d".format(steps), fontSize = 42.sp, fontWeight = FontWeight.ExtraBold)
-            Text("Steps", style = MaterialTheme.typography.caption, color = MaterialTheme.colors.onBackground)
+            Text(
+                "Steps",
+                style = MaterialTheme.typography.caption.copy(
+                    MaterialTheme.colors.onBackground.copy(
+                        0.72f
+                    )
+                )
+            )
         }
     }
 }

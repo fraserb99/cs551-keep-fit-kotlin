@@ -1,10 +1,8 @@
 package com.fraserbell.keepfit.ui.steps.composable
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
@@ -13,9 +11,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
@@ -41,34 +37,21 @@ fun DailyStepInfo(date: LocalDate, onSwitchGoal: () -> Unit, vm: DailyStepsViewM
     val goal = dayWithSteps?.goal
 
     Column(Modifier.padding(8.dp)) {
-        InfoBubble {
-            Row {
-                Column(
-                    Modifier.padding(6.dp)
-                ) {
-                    Text(
-                        text = "Goal",
-                        style = MaterialTheme.typography.overline,
-                        modifier = Modifier.alpha(0.72f)
-                    )
-                    AnimatedContent(targetState = dailySteps) { day ->
-                        Text(
-                            text = goal?.name?.let { goal.name }
-                                ?: run { "N/A" },
-                            style = MaterialTheme.typography.h6,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.widthIn(0.dp, 178.dp)
-                        )
-                    }
-                }
+        InfoBubble(
+            visible = true,
+            label = "Goal",
+            transitionState = Pair(dailySteps, goal),
+            button = {
                 Button(
                     modifier = Modifier
                         .height(54.dp)
                         .width(40.dp),
                     onClick = onSwitchGoal,
                     contentPadding = PaddingValues(4.dp),
-                    shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), bottomStart = CornerSize(0.dp))
+                    shape = MaterialTheme.shapes.medium.copy(
+                        topStart = CornerSize(0.dp),
+                        bottomStart = CornerSize(0.dp)
+                    )
                 ) {
                     Icon(
                         imageVector = if (goal != null) Icons.Rounded.Menu else Icons.Rounded.Add,
@@ -76,64 +59,108 @@ fun DailyStepInfo(date: LocalDate, onSwitchGoal: () -> Unit, vm: DailyStepsViewM
                     )
                 }
             }
-        }
-        InfoBubble(visible = goal != null) {
-            Column(
-                Modifier.padding(6.dp)
-            ) {
+        ) {
+            (_, goalTarget) ->
                 Text(
-                    text = "Step Goal",
-                    style = MaterialTheme.typography.overline,
-                    modifier = Modifier.alpha(0.72f)
+                    text = goalTarget?.name?.let { goalTarget.name }
+                        ?: run { "N/A" },
+                    style = MaterialTheme.typography.h6,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(0.dp, 178.dp)
                 )
-                AnimatedContent(targetState = goal) { goalTarget ->
-                    Text(
-                        text = goalTarget?.stepGoal?.let { "%,d".format(goalTarget.stepGoal) }
-                            ?: run { "N/A" },
-                        style = MaterialTheme.typography.h6
-                    )
-                }
-            }
         }
-        InfoBubble(visible = goal != null) {
-            Column(
-                Modifier.padding(6.dp)
-            ) {
-                Text(
-                    text = "Progress",
-                    style = MaterialTheme.typography.overline,
-                    modifier = Modifier.alpha(0.72f)
-                )
-                AnimatedContent(targetState = Pair(dailySteps, goal)) { (day, goalTarget) ->
-                    Text(
-                        text = if (goalTarget?.stepGoal != null && day?.steps != null) {
-                            (day.steps.toFloat() / goalTarget.stepGoal * 100).roundToInt()
-                                .toString() + "%"
-                        } else {
-                            "N/A"
-                        },
-                        style = MaterialTheme.typography.h6
-                    )
-                }
-            }
+        InfoBubble(
+            visible = goal != null,
+            label = "Step Goal",
+            transitionState = Pair(dailySteps, goal)
+        ) { (_, goalTarget) ->
+            Text(
+                text = goalTarget?.stepGoal?.let { "%,d".format(goalTarget.stepGoal) }
+                    ?: run { "N/A" },
+                style = MaterialTheme.typography.h6
+            )
+        }
+        InfoBubble(
+            visible = goal != null,
+            label = "Progress",
+            transitionState = Pair(dailySteps, goal)
+        ) { (day, goalTarget) ->
+            Text(
+                text = if (goalTarget?.stepGoal != null && day?.steps != null) {
+                    (day.steps.toFloat() / goalTarget.stepGoal * 100).roundToInt()
+                        .toString() + "%"
+                } else {
+                    "N/A"
+                },
+                style = MaterialTheme.typography.h6
+            )
         }
     }
 }
+
 
 @ExperimentalAnimationApi
 @Composable
 fun InfoBubble(
     visible: Boolean = true,
-    content: @Composable() () -> Unit
+    label: String,
+    button: @Composable (() -> Unit)? = null,
+    transitionState: Pair<DailySteps?, Goal?>,
+    content: @Composable (Pair<DailySteps?, Goal?>) -> Unit
 ) {
-    AnimatedVisibility(visible = visible) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInHorizontally(),
+        exit = slideOutHorizontally(),
+    ) {
         Surface(
             modifier = Modifier
                 .padding(bottom = 4.dp),
             elevation = 8.dp,
             shape = MaterialTheme.shapes.medium
         ) {
-            content()
+            Row {
+                Column(
+                    Modifier.padding(6.dp)
+                ) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.overline,
+                        modifier = Modifier.alpha(0.72f)
+                    )
+                    AnimatedContent(
+                        targetState = transitionState,
+                        transitionSpec = {
+                            val initialGoal = initialState.second
+                            val goal = targetState.second
+                            val initialDay = initialState.first
+                            val day = targetState.first
+
+                            val transitionForward = initialDay?.let {
+                                day?.dayId?.isBefore(initialDay.dayId)
+                            }
+
+                            when {
+                                transitionForward == true -> {
+                                    slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) + fadeIn() with
+                                            slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
+                                }
+                                transitionForward == false -> {
+                                    slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) + fadeIn() with
+                                            slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth }) + fadeOut()
+                                }
+                                else -> {
+                                    fadeIn() with fadeOut()
+                                }
+                            }.using(SizeTransform())
+                        }
+                    ) {
+                        content(it)
+                    }
+                }
+                button?.invoke()
+            }
         }
     }
 }

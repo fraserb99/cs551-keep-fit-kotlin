@@ -9,4 +9,5 @@ import java.time.LocalDate
 interface StepsRepository {
     fun getById(dayId: LocalDate): Flow<DayWithGoal>
     suspend fun addStepsToDay(dayId: LocalDate, steps: Int)
+    suspend fun updateDailyGoal(dayId: LocalDate, goalId: Int)
 }
