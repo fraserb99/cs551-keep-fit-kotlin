@@ -29,10 +29,12 @@ fun GoalListItem(
     onDelete: (goal: Goal) -> Unit,
     currentOpenItem: Int?,
     onSwipe: (open: Boolean) -> Unit,
+    allowEditing: Boolean = true
 ) {
     val itemSize by remember { mutableStateOf(IntSize.Zero) }
     val swipeableState = rememberSwipeableState(1)
-    val actionsSize = 144.dp
+    val actionButtonSize = 72.dp
+    val actionsSize = if (allowEditing) actionButtonSize * 2 else actionButtonSize
     val sizePx = with(LocalDensity.current) { actionsSize.toPx() }
 
     Surface( modifier = Modifier.swipeable(
@@ -44,60 +46,29 @@ fun GoalListItem(
         Box {
             Row(
                 Modifier
-                    .height(72.dp)
+                    .height(56.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
                 Surface(
                     Modifier
                         .fillMaxHeight()
-                        .width(actionsSize / 2)
-                        .clickable(onClick = { onEdit(goal) }),
-                    color = MaterialTheme.colors.primary,
-                ) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Edit,
-                            contentDescription = "edit",
-                            tint = Color.White,
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-                }
+                        .width(actionButtonSize),
+                    color = if (allowEditing) Color(0xFF8021f3) else MaterialTheme.colors.error,
+                ) { }
                 GoalActionButton(
                     icon = Icons.Rounded.Edit,
                     onClick = { onEdit(goal) },
                     backgroundColor = Color(0xFF8021f3),
-                    width = actionsSize / 2
+                    width = actionButtonSize,
+                    visible = allowEditing
                 )
-                Surface(
-                    Modifier
-                        .fillMaxHeight()
-                        .width(actionsSize / 2)
-                        .clickable(onClick = { onDelete(goal) }),
-                    color = MaterialTheme.colors.error
-                ) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Delete,
-                            contentDescription = "delete",
-                            tint = Color.White,
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-                }
+                GoalActionButton(
+                    icon = Icons.Rounded.Delete,
+                    onClick = { onDelete(goal) },
+                    backgroundColor = MaterialTheme.colors.error,
+                    width = actionButtonSize,
+                )
             }
             Surface(
                 elevation = 1.dp,
@@ -110,8 +81,8 @@ fun GoalListItem(
             ) {
                 ListItem(
                     icon = { Icon(imageVector = Icons.Rounded.Star, contentDescription = "") },
-                    text = { Text("%,d".format(goal.stepGoal)) },
-                    secondaryText = { if (goal.name != null) { Text(goal.name) }},
+                    trailing = { Text("%,d".format(goal.stepGoal)) },
+                    text = { Text(goal.name) },
                 )
             }
         }
@@ -137,28 +108,31 @@ fun GoalActionButton(
     icon: ImageVector,
     onClick: () -> Unit,
     backgroundColor: Color,
-    width: Dp
+    width: Dp,
+    visible: Boolean = true
 ) {
-    Surface(
-        Modifier
-            .fillMaxHeight()
-            .width(width)
-            .clickable(onClick = onClick),
-        color = backgroundColor
-    ) {
-        Row(
+    if (visible) {
+        Surface(
             Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxHeight()
+                .width(width)
+                .clickable(onClick = onClick),
+            color = backgroundColor
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = "",
-                tint = Color.White,
-                modifier = Modifier.size(36.dp)
-            )
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "",
+                    tint = Color.White,
+                    modifier = Modifier.size(36.dp)
+                )
+            }
         }
     }
 }

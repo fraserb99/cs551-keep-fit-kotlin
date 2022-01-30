@@ -9,10 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,14 +19,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.fraserbell.keepfit.data.entities.Goal
+import com.fraserbell.keepfit.navigation.Screen
 import com.fraserbell.keepfit.ui.goals.composable.*
 import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
 
 @ExperimentalMaterialApi
 @Composable
-fun GoalsScreen(vm: GoalsViewModel = hiltViewModel()) {
+fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel()) {
     val goals = vm.goals.collectAsState(null);
     val openDialog = remember { mutableStateOf(false) }
     val goalToDelete = remember { mutableStateOf<Goal?>(null) }
@@ -37,8 +36,19 @@ fun GoalsScreen(vm: GoalsViewModel = hiltViewModel()) {
     var goalToEdit by remember { mutableStateOf<Goal?>(null) }
     var currentOpenItem by remember { mutableStateOf<Int?>(null) }
     val listState = rememberLazyListState()
+    val allowEditing by vm.allowEditing.collectAsState(initial = true)
 
     Scaffold(
+        topBar = {
+          TopAppBar(
+            title = { Text("Manage Goals") },
+            actions = {
+                IconButton(onClick = { navController.navigate(Screen.GoalPrefs.route) }) {
+                    Icon(imageVector = Icons.Rounded.Settings, contentDescription = "goal preferences")
+                }
+            }
+          )
+        },
         content = {
             LazyColumn(
                 Modifier
@@ -64,7 +74,8 @@ fun GoalsScreen(vm: GoalsViewModel = hiltViewModel()) {
                                 if (open) {
                                     currentOpenItem = goal.goalId
                                 }
-                            }
+                            },
+                            allowEditing = allowEditing
                         )
                         Divider()
                     }

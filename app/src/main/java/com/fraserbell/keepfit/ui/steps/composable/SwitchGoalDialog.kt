@@ -87,6 +87,7 @@ fun SwitchGoalDialog(
                             }
                         }
                     }
+                    Divider()
                     Surface(
                         elevation = 0.dp
                     ) {

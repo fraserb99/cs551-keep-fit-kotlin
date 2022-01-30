@@ -14,6 +14,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.fraserbell.keepfit.data.DataTypeConverters
+import com.fraserbell.keepfit.ui.goals.GoalPreferencesScreen
 import com.fraserbell.keepfit.ui.goals.GoalsScreen
 import com.fraserbell.keepfit.ui.steps.StepsScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -34,7 +35,7 @@ fun KeepFitBottomNav() {
                 val currentDestination = navBackStackEntry?.destination
                 items.forEach { screen ->
                     BottomNavigationItem(
-                        icon = { Icon(screen.icon, contentDescription = null) },
+                        icon = { screen.icon?.let { Icon(it, contentDescription = null) } },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {
@@ -57,7 +58,10 @@ fun KeepFitBottomNav() {
                 arguments = listOf(navArgument("initialDate") { nullable = true })
             ) { backNavigation -> StepsScreen(navController, backNavigation.arguments?.getLong("initialDate")) }
             composable(Screen.Goals.route) {
-                GoalsScreen()
+                GoalsScreen(navController)
+            }
+            composable(Screen.GoalPrefs.route) {
+                GoalPreferencesScreen(navController)
             }
         }
     }
