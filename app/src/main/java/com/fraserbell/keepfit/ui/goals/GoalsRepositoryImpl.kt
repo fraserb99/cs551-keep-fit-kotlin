@@ -21,4 +21,8 @@ class GoalsRepositoryImpl @Inject constructor(private val goalDao: GoalDao): Goa
     override suspend fun update(goal: Goal) {
         goalDao.updateGoal(goal)
     }
+
+    override suspend fun getGoalNameCount(name: String): Int {
+        return goalDao.getNameCount(name)
+    }
 }

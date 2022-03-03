@@ -28,4 +28,9 @@ class GoalsViewModel @Inject constructor(
     fun updateGoalAsync(goal: Goal) = viewModelScope.async {
         goalsRepository.update(goal)
     }
+
+    fun goalNameExists(name: String, maxCount: Int = 0) = viewModelScope.async {
+        val count = goalsRepository.getGoalNameCount(name)
+        return@async count > maxCount
+    }
 }

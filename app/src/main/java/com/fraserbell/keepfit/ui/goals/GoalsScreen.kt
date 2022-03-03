@@ -29,7 +29,7 @@ import kotlin.math.roundToInt
 @ExperimentalMaterialApi
 @Composable
 fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel()) {
-    val goals = vm.goals.collectAsState(null);
+    val goals = vm.goals.collectAsState(null)
     val openDialog = remember { mutableStateOf(false) }
     val goalToDelete = remember { mutableStateOf<Goal?>(null) }
     var addDialogVisible by remember { mutableStateOf(false) }
@@ -39,23 +39,12 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
     val allowEditing by vm.allowEditing.collectAsState(initial = true)
 
     Scaffold(
-        topBar = {
-          TopAppBar(
-            title = { Text("Manage Goals") },
-            actions = {
-                IconButton(onClick = { navController.navigate(Screen.GoalPrefs.route) }) {
-                    Icon(imageVector = Icons.Rounded.Settings, contentDescription = "goal preferences")
-                }
-            }
-          )
-        },
         content = {
             LazyColumn(
                 Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(),
                 state = listState,
-
             ) {
                 goals.value?.forEach {
                     goal ->

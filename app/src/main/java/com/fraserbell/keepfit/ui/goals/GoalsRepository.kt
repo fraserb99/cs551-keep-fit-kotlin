@@ -8,4 +8,5 @@ interface GoalsRepository {
     suspend fun delete(goal: Goal)
     suspend fun add(goal: Goal)
     suspend fun update(goal: Goal)
+    suspend fun getGoalNameCount(name: String): Int
 }

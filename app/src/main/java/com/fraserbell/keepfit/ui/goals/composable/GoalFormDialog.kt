@@ -1,6 +1,8 @@
 package com.fraserbell.keepfit.ui.goals.composable
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +15,8 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.fraserbell.keepfit.ui.goals.GoalsViewModel
 import kotlinx.coroutines.delay
 
 data class GoalFormValues(
@@ -25,7 +29,8 @@ fun GoalFormDialog(
     title: String,
     initialValues: GoalFormValues = GoalFormValues("", 0),
     onSave: (values: GoalFormValues) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    vm: GoalsViewModel = hiltViewModel()
 ) {
     var nameFieldValue by remember { mutableStateOf(TextFieldValue(initialValues.name, TextRange(initialValues.name.length))) }
     var nameFieldError by remember { mutableStateOf<String?>(null) }
@@ -38,25 +43,25 @@ fun GoalFormDialog(
 
     val onSubmit: () -> Unit = {
         val intStepValue = stepValue.text.toIntOrNull()
-        when {
+        stepFieldError = when {
             intStepValue == null -> {
-                stepFieldError = "Enter a step goal"
+                "Enter a step goal"
             }
-            intStepValue < 1000 -> {
-                stepFieldError = "Minimum goal is 1000 steps"
+            intStepValue < 0 -> {
+                "Please enter a goal greater than 0 steps"
             }
             intStepValue > 100000 -> {
-                stepFieldError = "Please enter a goal of less than 100,000 steps"
+                "Please enter a goal of less than 100,000 steps"
             } else -> {
-                stepFieldError = null
+                null
             }
         }
 
-        when {
+        nameFieldError = when {
             nameFieldValue.text.isEmpty() -> {
-                nameFieldError = "Please enter a name for the Goal"
+                "Please enter a name for the Goal"
             }
-            else -> nameFieldError = null
+            else -> null
         }
 
         if (stepFieldError == null && nameFieldError == null && intStepValue != null) {
@@ -84,6 +89,7 @@ fun GoalFormDialog(
                         color = MaterialTheme.colors.error
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
                 TextField(
                     value = stepValue, onValueChange = { stepValue = it },
                     label = { Text(text = "Step Goal") },

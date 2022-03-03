@@ -18,4 +18,7 @@ interface GoalDao {
 
     @Delete
     suspend fun delete(goal: Goal)
+
+    @Query("SELECT COUNT(*) FROM Goal WHERE name=:name")
+    suspend fun getNameCount(name: String): Int
 }

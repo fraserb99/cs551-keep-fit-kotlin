@@ -3,6 +3,8 @@ package com.fraserbell.keepfit.navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,12 +29,25 @@ val items = listOf(Screen.Goals, Screen.Steps, Screen.History)
 @Composable
 fun KeepFitBottomNav() {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    val currentScreen = items.find { it.route == currentDestination?.route }
 
     Scaffold(
+        topBar = {
+            currentScreen?.let {
+                TopAppBar(
+                    title = {  Text(it.title) },
+                    actions = {
+                        IconButton(onClick = { navController.navigate(Screen.GoalPrefs.route) }) {
+                            Icon(imageVector = Icons.Rounded.Settings, contentDescription = "settings")
+                        }
+                    }
+                )
+            }
+        },
         bottomBar =  {
             BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
                 items.forEach { screen ->
                     BottomNavigationItem(
                         icon = { screen.icon?.let { Icon(it, contentDescription = null) } },
