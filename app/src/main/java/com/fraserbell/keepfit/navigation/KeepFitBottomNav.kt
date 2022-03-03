@@ -15,9 +15,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.fraserbell.keepfit.data.DataTypeConverters
-import com.fraserbell.keepfit.ui.goals.GoalPreferencesScreen
 import com.fraserbell.keepfit.ui.goals.GoalsScreen
+import com.fraserbell.keepfit.ui.settings.SettingsScreen
 import com.fraserbell.keepfit.ui.steps.StepsScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 
@@ -76,7 +75,7 @@ fun KeepFitBottomNav() {
                 GoalsScreen(navController)
             }
             composable(Screen.GoalPrefs.route) {
-                GoalPreferencesScreen(navController)
+                SettingsScreen(navController)
             }
         }
     }

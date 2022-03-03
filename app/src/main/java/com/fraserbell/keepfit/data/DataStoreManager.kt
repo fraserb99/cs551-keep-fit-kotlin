@@ -12,6 +12,7 @@ import javax.inject.Inject
 private val Context.dataStore by preferencesDataStore("settings")
 
 private val GOALS_EDITABLE = booleanPreferencesKey("goalsEditable")
+private val HISTORY_RECORDING = booleanPreferencesKey("historyRecording")
 
 class DataStoreManager @Inject constructor(@ApplicationContext appContext: Context) {
     private val settingsDataStore = appContext.dataStore
@@ -24,5 +25,15 @@ class DataStoreManager @Inject constructor(@ApplicationContext appContext: Conte
 
     val goalsEditable: Flow<Boolean> = settingsDataStore.data.map { preferences ->
         preferences[GOALS_EDITABLE] ?: true
+    }
+
+    suspend fun setHistoryRecording(value: Boolean) {
+        settingsDataStore.edit { settings ->
+            settings[HISTORY_RECORDING] = value
+        }
+    }
+
+    val historyRecording: Flow<Boolean> = settingsDataStore.data.map { preferences ->
+        preferences[HISTORY_RECORDING] ?: false
     }
 }

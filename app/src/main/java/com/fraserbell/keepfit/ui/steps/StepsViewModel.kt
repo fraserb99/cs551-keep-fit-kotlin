@@ -2,6 +2,7 @@ package com.fraserbell.keepfit.ui.steps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fraserbell.keepfit.data.DataStoreManager
 import com.fraserbell.keepfit.data.entities.DailySteps
 import com.fraserbell.keepfit.data.entities.DayWithGoal
 import com.fraserbell.keepfit.data.entities.Goal
@@ -12,7 +13,9 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class StepsViewModel @Inject constructor(private val stepsRepository: StepsRepository) : ViewModel() {
+class StepsViewModel @Inject constructor(private val stepsRepository: StepsRepository, private val dataManager: DataStoreManager) : ViewModel() {
+    val allowHistoricalRecording = dataManager.historyRecording
+
     fun getDayById(dayId: LocalDate): Flow<DayWithGoal> {
         return stepsRepository.getById(dayId)
     }

@@ -37,19 +37,23 @@ import kotlin.math.roundToInt
 @Composable
 fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewModel = hiltViewModel()) {
     var currentDayId by remember { mutableStateOf(initialDate?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()) }
-
+    
     var goalDialogVisible by remember { mutableStateOf(false) }
     var addDialogVisible by remember { mutableStateOf(false) }
+    
+    val allowHistoricalRecording by vm.allowHistoricalRecording.collectAsState(initial = false)
 
     val pagerState = rememberPagerState()
     val tabPagerState = rememberPagerState()
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { addDialogVisible = true }
-            ) {
-                Icon(imageVector = Icons.Rounded.Add, contentDescription = "add goal")
+            if (allowHistoricalRecording || currentDayId == LocalDate.now()) {
+                FloatingActionButton(
+                    onClick = { addDialogVisible = true }
+                ) {
+                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "add goal")
+                }
             }
         },
         floatingActionButtonPosition = FabPosition.End
