@@ -10,11 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,15 +20,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.navOptions
-import com.fraserbell.keepfit.data.entities.DayWithGoal
+import com.fraserbell.keepfit.data.entities.DailySteps
 import com.fraserbell.keepfit.navigation.Screen
 import com.fraserbell.keepfit.ui.history.composable.ClearHistoryModal
 import com.fraserbell.keepfit.ui.steps.composable.getProgressColour
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
-import io.github.boguszpawlowski.composecalendar.header.MonthState
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import io.github.boguszpawlowski.composecalendar.selection.SelectionMode
@@ -38,7 +33,6 @@ import kotlinx.coroutines.flow.Flow
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
-import java.time.temporal.TemporalField
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -119,7 +113,7 @@ fun HistoryCard(currentDate: LocalDate?, navController: NavController, vm: Histo
                 currentDate?.let { date ->
                     val steps by vm.getStepsForDate(date).collectAsState(initial = null)
                     val progress = steps?.let {
-                        it.goal?.stepGoal?.let { goal -> it.dailySteps.steps.toFloat() / goal }
+                        it.goal?.stepGoal?.let { goal -> it.steps.toFloat() / goal }
                     } ?: 0f
 
                     Box(
@@ -185,7 +179,7 @@ fun HistoryCard(currentDate: LocalDate?, navController: NavController, vm: Histo
                                     Column(Modifier.padding(4.dp)) {
                                         Text("Steps", style = MaterialTheme.typography.caption)
                                         Text(
-                                            "%,d".format(it.dailySteps.steps),
+                                            "%,d".format(it.steps),
                                             style = MaterialTheme.typography.h4
                                         )
                                     }
@@ -223,12 +217,12 @@ fun HistoryCard(currentDate: LocalDate?, navController: NavController, vm: Histo
 }
 
 @Composable
-fun DayContent(dayState: DayState<DynamicSelectionState>, stepsState: Flow<DayWithGoal>) {
+fun DayContent(dayState: DayState<DynamicSelectionState>, stepsState: Flow<DailySteps>) {
     val dayWithGoal by stepsState.collectAsState(initial = null)
     val selectionState = dayState.selectionState
     val isSelected = selectionState.isDateSelected(dayState.date)
 
-    val steps = dayWithGoal?.dailySteps?.steps
+    val steps = dayWithGoal?.steps
     val stepGoal = dayWithGoal?.goal?.stepGoal
     val progress = steps?.let {
         stepGoal?.let { goal -> it.toFloat() / goal }

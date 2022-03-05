@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fraserbell.keepfit.data.DataStoreManager
 import com.fraserbell.keepfit.data.entities.DailySteps
-import com.fraserbell.keepfit.data.entities.DayWithGoal
-import com.fraserbell.keepfit.data.entities.Goal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +14,7 @@ import javax.inject.Inject
 class StepsViewModel @Inject constructor(private val stepsRepository: StepsRepository, private val dataManager: DataStoreManager) : ViewModel() {
     val allowHistoricalRecording = dataManager.historyRecording
 
-    fun getDayById(dayId: LocalDate): Flow<DayWithGoal> {
+    fun getDayById(dayId: LocalDate): Flow<DailySteps> {
         return stepsRepository.getById(dayId)
     }
 

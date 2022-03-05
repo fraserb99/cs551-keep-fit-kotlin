@@ -1,6 +1,5 @@
 package com.fraserbell.keepfit.ui.steps.composable
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -8,23 +7,18 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fraserbell.keepfit.data.entities.DailySteps
-import com.fraserbell.keepfit.data.entities.DayWithGoal
 import com.fraserbell.keepfit.data.entities.Goal
+import com.fraserbell.keepfit.data.entities.GoalDetails
 import com.fraserbell.keepfit.ui.steps.DailyStepsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -32,9 +26,8 @@ import kotlin.math.roundToInt
 @ExperimentalPagerApi
 @Composable
 fun DailyStepInfo(date: LocalDate, onSwitchGoal: () -> Unit, vm: DailyStepsViewModel = hiltViewModel()) {
-    val dayWithSteps by vm.getStepsForDate(date).collectAsState(initial = null)
-    val dailySteps = dayWithSteps?.dailySteps
-    val goal = dayWithSteps?.goal
+    val dailySteps by vm.getStepsForDate(date).collectAsState(initial = null)
+    val goal = dailySteps?.goal
 
     Column(Modifier.padding(8.dp)) {
         InfoBubble(
@@ -106,8 +99,8 @@ fun InfoBubble(
     visible: Boolean = true,
     label: String,
     button: @Composable (() -> Unit)? = null,
-    transitionState: Pair<DailySteps?, Goal?>,
-    content: @Composable (Pair<DailySteps?, Goal?>) -> Unit
+    transitionState: Pair<DailySteps?, GoalDetails?>,
+    content: @Composable (Pair<DailySteps?, GoalDetails?>) -> Unit
 ) {
     AnimatedVisibility(
         visible = visible,

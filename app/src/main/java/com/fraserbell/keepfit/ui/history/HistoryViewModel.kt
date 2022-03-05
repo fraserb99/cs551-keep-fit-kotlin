@@ -3,7 +3,7 @@ package com.fraserbell.keepfit.ui.history
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fraserbell.keepfit.data.entities.DayWithGoal
+import com.fraserbell.keepfit.data.entities.DailySteps
 import com.fraserbell.keepfit.ui.steps.StepsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -16,7 +16,7 @@ class HistoryViewModel @Inject constructor(private val stepsRepository: StepsRep
     var currentDate = mutableStateOf<LocalDate?>(null)
     val currentSteps = currentDate.value?.let { getStepsForDate(it) }
 
-    fun getStepsForDate(date: LocalDate): Flow<DayWithGoal> {
+    fun getStepsForDate(date: LocalDate): Flow<DailySteps> {
         return stepsRepository.getById(date)
     }
 

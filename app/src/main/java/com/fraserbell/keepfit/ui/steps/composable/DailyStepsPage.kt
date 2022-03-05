@@ -12,9 +12,8 @@ import com.fraserbell.keepfit.ui.steps.DailyStepsViewModel
 
 @Composable
 fun DailyStepsPage(index: Int, vm: DailyStepsViewModel = hiltViewModel()) {
-    val dayWithSteps by vm.getStepsForDayIndex(index).collectAsState(initial = null)
-    val dailySteps = dayWithSteps?.dailySteps
-    val goal = dayWithSteps?.goal
+    val dailySteps by vm.getStepsForDayIndex(index).collectAsState(initial = null)
+    val goal = dailySteps?.goal
 
     Column(
         Modifier
