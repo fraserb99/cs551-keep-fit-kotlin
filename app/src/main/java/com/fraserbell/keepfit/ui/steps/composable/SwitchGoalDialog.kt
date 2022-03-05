@@ -18,10 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.fraserbell.keepfit.data.entities.Goal
-import com.fraserbell.keepfit.ui.goals.GoalsViewModel
-import com.fraserbell.keepfit.ui.steps.DailyStepsViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.time.LocalDate
@@ -31,29 +29,13 @@ import java.time.LocalDate
 fun SwitchGoalDialog(
     date: LocalDate,
     visible: Boolean,
+    onUpdate: (date: LocalDate, goalId: Int) -> Unit,
     onCancel: () -> Unit,
-    goalsViewModel: GoalsViewModel = hiltViewModel(),
-    dailyStepsViewModel: DailyStepsViewModel = hiltViewModel()
+    currentGoalId: Int?,
+    goals: List<Goal>
 ) {
-    val goals by goalsViewModel.goals.collectAsState(initial = listOf())
-    val day by dailyStepsViewModel.getStepsForDate(date).collectAsState(null)
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
     fun onSelect(goal: Goal) {
-        scope.launch {
-            try {
-                dailyStepsViewModel.updateDailyGoal(date, goal.goalId)
-            } catch (e: Exception) {
-                Toast.makeText(
-                    context,
-                    "There was a problem switching goal, please try again",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } finally {
-                onCancel()
-            }
-        }
+        onUpdate(date, goal.goalId)
     }
 
     if (visible) {
@@ -105,7 +87,7 @@ fun SwitchGoalDialog(
                                             modifier = Modifier.height(36.dp),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            if (day?.goal?.goalId == goal.goalId) {
+                                            if (currentGoalId == goal.goalId) {
                                                 Icon(
                                                     imageVector = Icons.Rounded.Check,
                                                     contentDescription = "checked"

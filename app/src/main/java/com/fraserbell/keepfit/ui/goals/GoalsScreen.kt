@@ -30,21 +30,15 @@ import kotlin.math.roundToInt
 @Composable
 fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel()) {
     val goals = vm.goals.collectAsState(null)
-    val openDialog = remember { mutableStateOf(false) }
-    val goalToDelete = remember { mutableStateOf<Goal?>(null) }
-    var addDialogVisible by remember { mutableStateOf(false) }
-    var goalToEdit by remember { mutableStateOf<Goal?>(null) }
-    var currentOpenItem by remember { mutableStateOf<Int?>(null) }
-    val listState = rememberLazyListState()
     val allowEditing by vm.allowEditing.collectAsState(initial = true)
 
     Scaffold(
+        scaffoldState = vm.scaffoldState.value,
         content = {
             LazyColumn(
                 Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(),
-                state = listState,
             ) {
                 goals.value?.forEach {
                     goal ->
@@ -52,16 +46,15 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
                         GoalListItem(
                             goal,
                             onEdit = {
-                                goalToEdit = goal
+                                vm.goalToEdit.value = goal
                             },
                             onDelete = {
-                                openDialog.value = true
-                                goalToDelete.value = goal
+                                vm.goalToDelete.value = goal
                             },
-                            currentOpenItem = currentOpenItem,
+                            currentOpenItem = vm.currentOpenItem.value,
                             onSwipe = { open ->
                                 if (open) {
-                                    currentOpenItem = goal.goalId
+                                    vm.currentOpenItem.value = goal.goalId
                                 }
                             },
                             allowEditing = allowEditing
@@ -70,37 +63,38 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
                     }
                 }
             }
-            if (openDialog.value) {
+            if (vm.goalToDelete.value != null) {
                 DeleteGoalConfirmDialog(
                     onDelete = {
-                        vm.deleteGoalAsync(goalToDelete.value!!)
+                        vm.deleteGoalAsync(vm.goalToDelete.value!!)
                     },
                     onCancel = {
-                        openDialog.value = false
-                        goalToDelete.value = null
+                        vm.goalToDelete.value = null
                     }
                 )
             }
             AddGoalDialog(
-                visible = addDialogVisible,
+                visible = vm.addDialogOpen.value,
                 onAdd = { goal -> vm.addGoalAsync(goal) },
                 onCancel = {
-                    addDialogVisible = false
-                    currentOpenItem = null
+                    vm.addDialogOpen.value = false
+                    vm.currentOpenItem.value = null
                 }
             )
             EditGoalDialog(
                 onSave = { goal -> vm.updateGoalAsync(goal) },
                 onCancel = {
-                    goalToEdit = null
-                    currentOpenItem = null
+                    vm.goalToEdit.value = null
+                    vm.currentOpenItem.value = null
                 },
-                goal = goalToEdit
+                goal = vm.goalToEdit.value
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { addDialogVisible = true }
+                onClick = {
+                    vm.addDialogOpen.value = true
+                }
             ) {
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = "add goal")
             }

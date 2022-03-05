@@ -30,7 +30,6 @@ fun GoalFormDialog(
     initialValues: GoalFormValues = GoalFormValues("", 0),
     onSave: (values: GoalFormValues) -> Unit,
     onCancel: () -> Unit,
-    vm: GoalsViewModel = hiltViewModel()
 ) {
     var nameFieldValue by remember { mutableStateOf(TextFieldValue(initialValues.name, TextRange(initialValues.name.length))) }
     var nameFieldError by remember { mutableStateOf<String?>(null) }

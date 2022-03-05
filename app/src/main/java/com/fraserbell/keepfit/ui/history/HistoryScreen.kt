@@ -38,21 +38,15 @@ import kotlin.math.roundToInt
 
 @Composable
 fun HistoryScreen(navController: NavController, vm: HistoryViewModel = hiltViewModel()) {
-    var currentDate by remember { vm.currentDate }
-    val calendarState = rememberSelectableCalendarState(
-        initialSelectionMode = SelectionMode.Single,
-        onSelectionChanged = { selection -> currentDate = selection.elementAtOrNull(0) },
-    )
-    var showClearModal by remember {
-        mutableStateOf(false)
-    }
+    val currentDate by remember { vm.currentDate }
+    val showClearModal by remember { vm.showClearModal }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(Screen.History.title) },
                 actions = {
-                    IconButton(onClick = { showClearModal = true }) {
+                    IconButton(onClick = { vm.confirmClearHistory() }) {
                         Icon(
                             Icons.Rounded.Delete,
                             "clearHistory"
@@ -74,14 +68,17 @@ fun HistoryScreen(navController: NavController, vm: HistoryViewModel = hiltViewM
                 .padding(8.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            HistoryCard(currentDate, navController, vm)
+            HistoryCard(currentDate, navController) { vm.getStepsForDate(it) }
             Row(Modifier.height(400.dp)) {
                 SelectableCalendar(
                     Modifier
                         .padding(4.dp)
                         .animateContentSize(),
                     firstDayOfWeek = DayOfWeek.MONDAY,
-                    calendarState = calendarState,
+                    calendarState = rememberSelectableCalendarState(
+                        initialSelectionMode = SelectionMode.Single,
+                        onSelectionChanged = { vm.setCurrentDate(it.elementAtOrNull(0)) },
+                    ),
                     dayContent = {
                         DayContent(
                             dayState = it,
@@ -94,14 +91,18 @@ fun HistoryScreen(navController: NavController, vm: HistoryViewModel = hiltViewM
         if (showClearModal) {
             ClearHistoryModal(
                 onDelete = { vm.clearHistory() },
-                onCancel = { showClearModal = false }
+                onCancel = { vm.cancelClearHistory() }
             )
         }
     }
 }
 
 @Composable
-fun HistoryCard(currentDate: LocalDate?, navController: NavController, vm: HistoryViewModel) {
+fun HistoryCard(
+    currentDate: LocalDate?,
+    navController: NavController,
+    getStepsForDay: (date: LocalDate) -> Flow<DailySteps?>
+) {
     Row(Modifier.height(200.dp)) {
         Card(
             Modifier
@@ -111,7 +112,7 @@ fun HistoryCard(currentDate: LocalDate?, navController: NavController, vm: Histo
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 currentDate?.let { date ->
-                    val steps by vm.getStepsForDate(date).collectAsState(initial = null)
+                    val steps by getStepsForDay(date).collectAsState(initial = null)
                     val progress = steps?.let {
                         it.goal?.stepGoal?.let { goal -> it.steps.toFloat() / goal }
                     } ?: 0f
@@ -228,8 +229,9 @@ fun DayContent(dayState: DayState<DynamicSelectionState>, stepsState: Flow<Daily
         stepGoal?.let { goal -> it.toFloat() / goal }
     } ?: 0f
 
-    val backgroundColor = if (dayState.date.isAfter(LocalDate.now()))
-        Color.LightGray else MaterialTheme.colors.surface
+//    val backgroundColor = if (dayState.date.isAfter(LocalDate.now()))
+//            if (MaterialTheme.colors.isLight) Color.LightGray else Colo
+//        else MaterialTheme.colors.surface
 
     Card(
         modifier = Modifier
@@ -238,25 +240,25 @@ fun DayContent(dayState: DayState<DynamicSelectionState>, stepsState: Flow<Daily
             .clickable(enabled = !dayState.date.isAfter(LocalDate.now())) {
                 selectionState.onDateSelected(dayState.date)
             },
-        elevation = if (dayState.isFromCurrentMonth) 2.dp else 0.dp,
-        border = if (dayState.isCurrentDay) BorderStroke(1.dp, MaterialTheme.colors.primary) else null,
-        backgroundColor = backgroundColor,
-        contentColor = if (isSelected) MaterialTheme.colors.primary else contentColorFor(
+        elevation = if (dayState.isFromCurrentMonth && !dayState.date.isAfter(LocalDate.now())) 2.dp else 0.dp,
+        border = if (isSelected) BorderStroke(1.dp, MaterialTheme.colors.primary) else null,
+        backgroundColor = MaterialTheme.colors.surface,
+        contentColor = if (dayState.isCurrentDay) MaterialTheme.colors.primary else contentColorFor(
             backgroundColor = MaterialTheme.colors.surface
         )
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Box(
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = dayState.date.dayOfMonth.toString(),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h6
+            Text(
+                text = dayState.date.dayOfMonth.toString(),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h6.copy(
+                    MaterialTheme.colors.onSurface.copy(
+                        if (dayState.date.isAfter(LocalDate.now())) ContentAlpha.disabled else 1f
+                    )
                 )
-            }
+            )
             if (stepGoal != null) {
                 Divider(
                     Modifier.align(Alignment.BottomCenter),

@@ -36,23 +36,16 @@ import kotlin.math.roundToInt
 @ExperimentalMaterialApi
 @Composable
 fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewModel = hiltViewModel()) {
-    var currentDayId by remember {
-        mutableStateOf(initialDate?.let {
-            if (initialDate == 0L) LocalDate.now() else LocalDate.ofEpochDay(initialDate)
-        } ?: LocalDate.now())
-    }
-    val dayDiff = LocalDate.now().toEpochDay() - currentDayId.toEpochDay()
-    val weekDiff = (
-            (LocalDate.now().getStartOfWeek().plusDays(6).toEpochDay() - currentDayId.toEpochDay()) / 7
-            ).toInt()
-
-    var goalDialogVisible by remember { mutableStateOf(false) }
-    var addDialogVisible by remember { mutableStateOf(false) }
-
+    var currentDayId by remember { vm.currentDayId }
+    val goals by vm.goals.collectAsState(listOf())
+    val currentSteps by vm.getStepsForDate(currentDayId).collectAsState(null)
     val allowHistoricalRecording by vm.allowHistoricalRecording.collectAsState(initial = false)
 
-    val pagerState = rememberPagerState(Int.MAX_VALUE, dayDiff.toInt())
-    val tabPagerState = rememberPagerState(Int.MAX_VALUE, weekDiff)
+    var goalDialogVisible by remember { vm.addDialogVisible }
+    var addDialogVisible by remember { vm.goalDialogVisible }
+
+    val pagerState by remember { vm.pagerState }
+    val weekPagerState by remember { vm.weekPagerState }
 
     Scaffold(
         floatingActionButton = {
@@ -70,7 +63,7 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
             TabMonthHeader(currentDayId)
             HorizontalPager(
                 reverseLayout = true,
-                state = tabPagerState
+                state = weekPagerState
             ) { page ->
                 val date = LocalDate.now().minusWeeks(page.toLong())
                 DaysOfWeekTabPage(
@@ -86,16 +79,22 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
                     state = pagerState,
                     reverseLayout = true
                 ) { page ->
-                    DailyStepsPage(index = page)
+                    DailyStepsPage(vm.getStepsForDayIndex(page))
                 }
-                DailyStepInfo(date = currentDayId, onSwitchGoal = { goalDialogVisible = true })
+                DailyStepInfo(
+                    onSwitchGoal = { goalDialogVisible = true },
+                    stepsFlow = vm.getStepsForDate(currentDayId)
+                )
             }
         }
 
         SwitchGoalDialog(
             date = currentDayId,
+            currentGoalId = currentSteps?.goal?.goalId,
             visible = goalDialogVisible,
-            onCancel = { goalDialogVisible = false }
+            onCancel = { goalDialogVisible = false },
+            onUpdate = { date, goalId -> vm.updateDailyGoalAsync(date, goalId) },
+            goals = goals
         )
         if (addDialogVisible) {
             AddStepsDialog(
@@ -112,30 +111,18 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
     // sync scrollStates and currentDate
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            val date = LocalDate.now().minusDays(page.toLong())
-            currentDayId = date
+            vm.onDayChange(page)
         }
     }
-    LaunchedEffect(tabPagerState) {
-        snapshotFlow { tabPagerState.currentPage }.collect { page ->
-            val date = LocalDate.now().minusWeeks(page.toLong()).withDayOfWeek(currentDayId.getIsoDayOfWeek())
-
-            if (!date.isInSameWeek(currentDayId)) {
-                currentDayId = if (!date.isAfter(LocalDate.now())) date else LocalDate.now()
-            }
+    LaunchedEffect(weekPagerState) {
+        snapshotFlow { weekPagerState.currentPage }.collect { page ->
+            vm.onWeekChange(page)
         }
     }
     LaunchedEffect(currentDayId) {
-        val dayDiff = (LocalDate.now().toEpochDay() - currentDayId.toEpochDay()).toInt()
-        val weekDiff = (
-                (LocalDate.now().getStartOfWeek().plusDays(6).toEpochDay() - currentDayId.toEpochDay()) / 7
-            ).toInt()
-
-        pagerState.animateScrollToPage(
-            dayDiff
-        )
-        tabPagerState.animateScrollToPage(
-            weekDiff
-        )
+        vm.syncPagers()
+    }
+    LaunchedEffect(initialDate) {
+        vm.setInitialDate(initialDate)
     }
 }

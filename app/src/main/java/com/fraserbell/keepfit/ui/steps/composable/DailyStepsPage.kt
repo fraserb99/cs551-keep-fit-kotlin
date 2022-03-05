@@ -7,12 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.fraserbell.keepfit.ui.steps.DailyStepsViewModel
+import com.fraserbell.keepfit.data.entities.DailySteps
+import kotlinx.coroutines.flow.Flow
 
 @Composable
-fun DailyStepsPage(index: Int, vm: DailyStepsViewModel = hiltViewModel()) {
-    val dailySteps by vm.getStepsForDayIndex(index).collectAsState(initial = null)
+fun DailyStepsPage(stepsFlow: Flow<DailySteps?>) {
+    val dailySteps by stepsFlow.collectAsState(initial = null)
     val goal = dailySteps?.goal
 
     Column(

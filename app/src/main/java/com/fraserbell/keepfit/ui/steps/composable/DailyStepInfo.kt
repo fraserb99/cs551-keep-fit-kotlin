@@ -13,20 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.fraserbell.keepfit.data.entities.DailySteps
-import com.fraserbell.keepfit.data.entities.Goal
 import com.fraserbell.keepfit.data.entities.GoalDetails
-import com.fraserbell.keepfit.ui.steps.DailyStepsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
-import java.time.LocalDate
+import kotlinx.coroutines.flow.Flow
 import kotlin.math.roundToInt
 
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
-fun DailyStepInfo(date: LocalDate, onSwitchGoal: () -> Unit, vm: DailyStepsViewModel = hiltViewModel()) {
-    val dailySteps by vm.getStepsForDate(date).collectAsState(initial = null)
+fun DailyStepInfo(onSwitchGoal: () -> Unit, stepsFlow: Flow<DailySteps?>) {
+    val dailySteps by stepsFlow.collectAsState(initial = null)
     val goal = dailySteps?.goal
 
     Column(Modifier.padding(8.dp)) {
