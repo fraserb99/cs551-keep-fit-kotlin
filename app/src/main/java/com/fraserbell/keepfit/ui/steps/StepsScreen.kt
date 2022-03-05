@@ -36,15 +36,23 @@ import kotlin.math.roundToInt
 @ExperimentalMaterialApi
 @Composable
 fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewModel = hiltViewModel()) {
-    var currentDayId by remember { mutableStateOf(initialDate?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()) }
-    
+    var currentDayId by remember {
+        mutableStateOf(initialDate?.let {
+            if (initialDate == 0L) LocalDate.now() else LocalDate.ofEpochDay(initialDate)
+        } ?: LocalDate.now())
+    }
+    val dayDiff = LocalDate.now().toEpochDay() - currentDayId.toEpochDay()
+    val weekDiff = (
+            (LocalDate.now().getStartOfWeek().plusDays(6).toEpochDay() - currentDayId.toEpochDay()) / 7
+            ).toInt()
+
     var goalDialogVisible by remember { mutableStateOf(false) }
     var addDialogVisible by remember { mutableStateOf(false) }
-    
+
     val allowHistoricalRecording by vm.allowHistoricalRecording.collectAsState(initial = false)
 
-    val pagerState = rememberPagerState()
-    val tabPagerState = rememberPagerState()
+    val pagerState = rememberPagerState(Int.MAX_VALUE, dayDiff.toInt())
+    val tabPagerState = rememberPagerState(Int.MAX_VALUE, weekDiff)
 
     Scaffold(
         floatingActionButton = {
@@ -61,7 +69,6 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
         Column {
             TabMonthHeader(currentDayId)
             HorizontalPager(
-                count = Int.MAX_VALUE,
                 reverseLayout = true,
                 state = tabPagerState
             ) { page ->
@@ -76,7 +83,6 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
             }
             Box {
                 HorizontalPager(
-                    count = Int.MAX_VALUE,
                     state = pagerState,
                     reverseLayout = true
                 ) { page ->

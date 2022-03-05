@@ -33,4 +33,7 @@ interface DailyStepsDao {
 
     @Query("SELECT EXISTS(SELECT * FROM DailySteps WHERE dayId = :dayId)")
     suspend fun exists(dayId: LocalDate): Boolean
+
+    @Query("DELETE from DailySteps")
+    suspend fun clearHistory()
 }

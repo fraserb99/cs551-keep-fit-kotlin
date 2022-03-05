@@ -7,9 +7,28 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class Screen(val route: String, val title: String, val icon: ImageVector? = null) {
-    object Goals : Screen("goals", "Manage Goals", Icons.Rounded.Star)
-    object GoalPrefs : Screen("settings", "Settings")
-    object Steps : Screen("steps?initialDate={initialDate}", "Activity", Icons.Rounded.Home)
-    object History : Screen("history", "History", Icons.Rounded.DateRange)
+sealed class Screen(val route: String, val title: String, val customTopBar: Boolean, val icon: ImageVector? = null) {
+    object Goals : Screen(
+        "goals",
+        "Manage Goals",
+        false,
+        Icons.Rounded.Star
+    )
+    object Settings : Screen(
+        "settings",
+        "Settings",
+        false
+    )
+    object Steps : Screen(
+        "steps?initialDate={initialDate}",
+        "Activity",
+        false,
+        Icons.Rounded.Home
+    )
+    object History : Screen(
+        "history",
+        "History",
+        true,
+        Icons.Rounded.DateRange
+    )
 }

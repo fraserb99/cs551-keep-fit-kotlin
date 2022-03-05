@@ -29,4 +29,8 @@ class StepsRepositoryImpl @Inject constructor(private val dailyStepsDao: DailySt
             dailyStepsDao.updateGoal(dayId, goalId)
         }
     }
+
+    override suspend fun clearHistory() {
+        return dailyStepsDao.clearHistory()
+    }
 }
