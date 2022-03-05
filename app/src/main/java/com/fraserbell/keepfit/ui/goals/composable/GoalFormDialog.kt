@@ -34,7 +34,7 @@ fun GoalFormDialog(
     var nameFieldValue by remember { mutableStateOf(TextFieldValue(initialValues.name, TextRange(initialValues.name.length))) }
     var nameFieldError by remember { mutableStateOf<String?>(null) }
 
-    val stepStringVal = initialValues.stepGoal?.toString() ?: ""
+    val stepStringVal = initialValues.stepGoal.toString() ?: ""
     var stepValue by remember { mutableStateOf(TextFieldValue(stepStringVal, TextRange(stepStringVal.length))) }
     var stepFieldError by remember { mutableStateOf<String?>(null) }
 
@@ -124,7 +124,6 @@ fun GoalFormDialog(
     )
 
     LaunchedEffect(Unit) {
-        delay(100)
         focusRequester.requestFocus()
     }
 }
