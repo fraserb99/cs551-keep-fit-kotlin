@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import com.fraserbell.keepfit.ui.steps.composable.*
 import com.fraserbell.keepfit.util.*
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -94,7 +95,8 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
             visible = goalDialogVisible,
             onCancel = { goalDialogVisible = false },
             onUpdate = { date, goalId -> vm.updateDailyGoalAsync(date, goalId) },
-            goals = goals
+            goals = goals,
+            navController = navController
         )
         if (addDialogVisible) {
             AddStepsDialog(

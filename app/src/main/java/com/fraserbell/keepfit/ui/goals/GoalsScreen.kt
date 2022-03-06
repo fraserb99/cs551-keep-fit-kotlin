@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -29,7 +30,7 @@ import kotlin.math.roundToInt
 @ExperimentalMaterialApi
 @Composable
 fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel()) {
-    val goals = vm.goals.collectAsState(null)
+    val goals by vm.goals.collectAsState(null)
     val activeId by vm.activeGoal.collectAsState(initial = null)
     val allowEditing by vm.allowEditing.collectAsState(initial = true)
 
@@ -41,7 +42,7 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
                     .fillMaxHeight()
                     .fillMaxWidth(),
             ) {
-                goals.value?.forEach {
+                goals?.forEach {
                     goal ->
                     item(goal.goalId) {
                         GoalListItem(
@@ -63,6 +64,18 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
                         )
                         Divider()
                     }
+                }
+            }
+            if (goals.isNullOrEmpty()) {
+                Row {
+                    Text(
+                        "Click the + button to add a goal",
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp, 24.dp),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
             if (vm.goalToDelete.value != null) {

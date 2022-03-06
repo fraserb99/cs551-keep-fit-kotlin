@@ -18,7 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
 import com.fraserbell.keepfit.data.entities.Goal
+import com.fraserbell.keepfit.navigation.Screen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -32,10 +36,21 @@ fun SwitchGoalDialog(
     onUpdate: (date: LocalDate, goalId: Int) -> Unit,
     onCancel: () -> Unit,
     currentGoalId: Int?,
-    goals: List<Goal>
+    goals: List<Goal>,
+    navController: NavController
 ) {
     fun onSelect(goal: Goal) {
         onUpdate(date, goal.goalId)
+    }
+
+    fun onNavigate(dest: String) {
+        navController.navigate(dest) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
     }
 
     if (visible) {
@@ -98,6 +113,24 @@ fun SwitchGoalDialog(
                                     modifier = Modifier.clickable { onSelect(goal) }
                                 )
                                 Divider()
+                            }
+                            if (goals.isEmpty()) {
+                                Row(Modifier.fillMaxWidth()) {
+                                    Column(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(100.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.SpaceAround
+                                    ) {
+                                        Text("Add a goal to get started")
+                                        Button(onClick = {
+                                            onNavigate(Screen.Goals.route)
+                                        }) {
+                                            Text("Manage Goals")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

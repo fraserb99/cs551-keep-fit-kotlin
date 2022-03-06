@@ -85,7 +85,7 @@ fun GoalListItem(
                     icon = { Icon(
                         imageVector = Icons.Rounded.Star,
                         contentDescription = "",
-                        tint = if (isActive) Gold else MaterialTheme.colors.onSurface
+                        tint = if (isActive) Gold else MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled)
                     ) },
                     trailing = { Text("%,d".format(goal.stepGoal)) },
                     text = { Text(goal.name) },
