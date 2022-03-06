@@ -41,8 +41,8 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
     val currentSteps by vm.getStepsForDate(currentDayId).collectAsState(null)
     val allowHistoricalRecording by vm.allowHistoricalRecording.collectAsState(initial = false)
 
-    var goalDialogVisible by remember { vm.addDialogVisible }
-    var addDialogVisible by remember { vm.goalDialogVisible }
+    var goalDialogVisible by remember { vm.goalDialogVisible }
+    var addDialogVisible by remember { vm.addDialogVisible }
 
     val pagerState by remember { vm.pagerState }
     val weekPagerState by remember { vm.weekPagerState }
@@ -69,8 +69,8 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
                 DaysOfWeekTabPage(
                     startDate = date.getStartOfWeek(),
                     currentDate = currentDayId,
-                    onDateChange = {
-                        newDate -> currentDayId = newDate
+                    onDateChange = { newDate ->
+                        currentDayId = newDate
                     }
                 )
             }
