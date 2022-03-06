@@ -8,6 +8,8 @@ import com.fraserbell.keepfit.data.DataStoreManager
 import com.fraserbell.keepfit.data.entities.Goal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,5 +38,27 @@ class GoalsViewModel @Inject constructor(
 
     fun updateGoalAsync(goal: Goal) = viewModelScope.async {
         goalsRepository.update(goal)
+    }
+
+    fun onEditClicked(goal: Goal) = viewModelScope.launch {
+        activeGoal.collect { activeId ->
+            if (activeId == goal.goalId) {
+                currentOpenItem.value = null
+                scaffoldState.value.snackbarHostState.showSnackbar("Cannot edit the currently active goal")
+            } else {
+                goalToEdit.value = goal
+            }
+        }
+    }
+
+    fun onDeleteClicked(goal: Goal) = viewModelScope.launch {
+        activeGoal.collect { activeId ->
+            if (activeId == goal.goalId) {
+                currentOpenItem.value = null
+                scaffoldState.value.snackbarHostState.showSnackbar("Cannot delete the currently active goal")
+            } else {
+                goalToDelete.value = goal
+            }
+        }
     }
 }

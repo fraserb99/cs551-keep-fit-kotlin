@@ -49,10 +49,10 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
                             goal,
                             isActive = goal.goalId == activeId,
                             onEdit = {
-                                vm.goalToEdit.value = goal
+                                vm.onEditClicked(it)
                             },
                             onDelete = {
-                                vm.goalToDelete.value = goal
+                                vm.onDeleteClicked(it)
                             },
                             currentOpenItem = vm.currentOpenItem.value,
                             onSwipe = { open ->

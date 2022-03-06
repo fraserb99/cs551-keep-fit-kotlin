@@ -46,7 +46,7 @@ fun GoalFormDialog(
             intStepValue == null -> {
                 "Enter a step goal"
             }
-            intStepValue < 0 -> {
+            intStepValue <= 0 -> {
                 "Please enter a goal greater than 0 steps"
             }
             intStepValue > 100000 -> {
