@@ -10,7 +10,12 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 
 @Composable
-fun AddGoalDialog(visible: Boolean, onAdd: (goal: Goal) -> Deferred<Unit>, onCancel: () -> Unit) {
+fun AddGoalDialog(
+    visible: Boolean,
+    onAdd: (goal: Goal) -> Deferred<Unit>,
+    onCancel: () -> Unit,
+    checkNameExists: (name: String) -> Deferred<Boolean>
+) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -19,8 +24,10 @@ fun AddGoalDialog(visible: Boolean, onAdd: (goal: Goal) -> Deferred<Unit>, onCan
             title = "Add Goal",
             onSave = { values ->
                 scope.launch {
-                    val goal = Goal(stepGoal = values.stepGoal, name = values.name)
                     try {
+                        if (values.stepGoal == null) throw Exception("Step goal is null")
+
+                        val goal = Goal(stepGoal = values.stepGoal, name = values.name)
                         onAdd(goal).await()
                         onCancel()
                     } catch (e: Exception) {
@@ -32,7 +39,8 @@ fun AddGoalDialog(visible: Boolean, onAdd: (goal: Goal) -> Deferred<Unit>, onCan
                     }
                 }
             },
-            onCancel = onCancel
+            onCancel = onCancel,
+            checkNameExists = { name -> checkNameExists(name) }
         )
     }
 }

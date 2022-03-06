@@ -17,30 +17,35 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fraserbell.keepfit.ui.goals.GoalsViewModel
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 data class GoalFormValues(
     val name: String,
-    val stepGoal: Int
+    val stepGoal: Int? = null
 )
 
 @Composable
 fun GoalFormDialog(
     title: String,
-    initialValues: GoalFormValues = GoalFormValues("", 0),
+    initialValues: GoalFormValues = GoalFormValues(""),
     onSave: (values: GoalFormValues) -> Unit,
     onCancel: () -> Unit,
+    checkNameExists: (name: String) -> Deferred<Boolean>
 ) {
+    val scope = rememberCoroutineScope()
+
     var nameFieldValue by remember { mutableStateOf(TextFieldValue(initialValues.name, TextRange(initialValues.name.length))) }
     var nameFieldError by remember { mutableStateOf<String?>(null) }
 
-    val stepStringVal = initialValues.stepGoal.toString() ?: ""
+    val stepStringVal = initialValues.stepGoal?.toString() ?: ""
     var stepValue by remember { mutableStateOf(TextFieldValue(stepStringVal, TextRange(stepStringVal.length))) }
     var stepFieldError by remember { mutableStateOf<String?>(null) }
 
     val focusRequester = remember { FocusRequester() }
 
-    val onSubmit: () -> Unit = {
+    fun onSubmit() = scope.launch {
         val intStepValue = stepValue.text.toIntOrNull()
         stepFieldError = when {
             intStepValue == null -> {
@@ -56,9 +61,13 @@ fun GoalFormDialog(
             }
         }
 
+        val nameExists = checkNameExists(nameFieldValue.text).await()
         nameFieldError = when {
             nameFieldValue.text.isEmpty() -> {
                 "Please enter a name for the Goal"
+            }
+            nameExists -> {
+                "A goal with this name already exists"
             }
             else -> null
         }
@@ -108,7 +117,7 @@ fun GoalFormDialog(
         },
         confirmButton = {
             Button(
-                onClick = onSubmit,
+                onClick = { onSubmit() },
             ) {
                 Text("Save")
             }

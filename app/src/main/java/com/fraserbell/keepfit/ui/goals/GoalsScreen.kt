@@ -94,7 +94,8 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
                 onCancel = {
                     vm.addDialogOpen.value = false
                     vm.currentOpenItem.value = null
-                }
+                },
+                checkNameExists = { name -> vm.checkGoalNameExists(name) }
             )
             EditGoalDialog(
                 onSave = { goal -> vm.updateGoalAsync(goal) },
@@ -102,7 +103,8 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
                     vm.goalToEdit.value = null
                     vm.currentOpenItem.value = null
                 },
-                goal = vm.goalToEdit.value
+                goal = vm.goalToEdit.value,
+                checkNameExists = { name, goalId -> vm.checkGoalNameExists(name, goalId) }
             )
         },
         floatingActionButton = {

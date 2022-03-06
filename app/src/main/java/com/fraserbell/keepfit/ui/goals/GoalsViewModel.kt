@@ -40,6 +40,10 @@ class GoalsViewModel @Inject constructor(
         goalsRepository.update(goal)
     }
 
+    fun checkGoalNameExists(name: String, currentId: Int = -1) = viewModelScope.async {
+        return@async goalsRepository.getGoalNameCount(name, currentId) > 0
+    }
+
     fun onEditClicked(goal: Goal) = viewModelScope.launch {
         activeGoal.collect { activeId ->
             if (activeId == goal.goalId) {

@@ -23,6 +23,6 @@ interface GoalDao {
     @Delete
     suspend fun delete(goal: Goal)
 
-    @Query("SELECT COUNT(*) FROM Goal WHERE name=:name")
-    suspend fun getNameCount(name: String): Int
+    @Query("SELECT COUNT(*) FROM Goal WHERE name=:name and goalId != :currentId")
+    suspend fun getNameCount(name: String, currentId: Int?): Int
 }
