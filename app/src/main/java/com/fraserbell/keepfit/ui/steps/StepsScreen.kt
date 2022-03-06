@@ -2,7 +2,9 @@ package com.fraserbell.keepfit.ui.steps
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -11,6 +13,7 @@ import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.*
@@ -49,13 +52,20 @@ fun StepsScreen(navController: NavController, initialDate: Long?, vm: StepsViewM
     val weekPagerState by remember { vm.weekPagerState }
 
     Scaffold(
+        scaffoldState = vm.scaffoldState.value,
         floatingActionButton = {
-            if (allowHistoricalRecording || currentDayId == LocalDate.now()) {
-                FloatingActionButton(
-                    onClick = { addDialogVisible = true }
-                ) {
-                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "add goal")
-                }
+            FloatingActionButton(
+                onClick = {
+                    vm.showAddDialog {
+                        navController.navigate(it) {
+
+                        }
+                    }
+                },
+                backgroundColor =
+                    if (allowHistoricalRecording || vm.isToday()) MaterialTheme.colors.secondary else Color.LightGray,
+            ) {
+                Icon(imageVector = Icons.Rounded.Add, contentDescription = "add goal")
             }
         },
         floatingActionButtonPosition = FabPosition.End
