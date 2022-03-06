@@ -30,6 +30,7 @@ import kotlin.math.roundToInt
 @Composable
 fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel()) {
     val goals = vm.goals.collectAsState(null)
+    val activeId by vm.activeGoal.collectAsState(initial = null)
     val allowEditing by vm.allowEditing.collectAsState(initial = true)
 
     Scaffold(
@@ -45,6 +46,7 @@ fun GoalsScreen(navController: NavController, vm: GoalsViewModel = hiltViewModel
                     item(goal.goalId) {
                         GoalListItem(
                             goal,
+                            isActive = goal.goalId == activeId,
                             onEdit = {
                                 vm.goalToEdit.value = goal
                             },

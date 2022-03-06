@@ -10,6 +10,10 @@ class GoalsRepositoryImpl @Inject constructor(private val goalDao: GoalDao): Goa
         return goalDao.getAll()
     }
 
+    override fun getActiveGoalId(): Flow<Int?> {
+        return goalDao.getActiveGoalId()
+    }
+
     override suspend fun delete(goal: Goal) {
         goalDao.delete(goal)
     }

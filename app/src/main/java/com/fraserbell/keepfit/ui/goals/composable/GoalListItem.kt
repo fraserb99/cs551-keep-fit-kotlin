@@ -19,12 +19,14 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.fraserbell.keepfit.data.entities.Goal
+import com.fraserbell.keepfit.ui.theme.Gold
 import kotlin.math.roundToInt
 
 @ExperimentalMaterialApi
 @Composable
 fun GoalListItem(
     goal: Goal,
+    isActive: Boolean,
     onEdit: (goal: Goal) -> Unit,
     onDelete: (goal: Goal) -> Unit,
     currentOpenItem: Int?,
@@ -80,7 +82,11 @@ fun GoalListItem(
                 }
             ) {
                 ListItem(
-                    icon = { Icon(imageVector = Icons.Rounded.Star, contentDescription = "") },
+                    icon = { Icon(
+                        imageVector = Icons.Rounded.Star,
+                        contentDescription = "",
+                        tint = if (isActive) Gold else MaterialTheme.colors.onSurface
+                    ) },
                     trailing = { Text("%,d".format(goal.stepGoal)) },
                     text = { Text(goal.name) },
                 )

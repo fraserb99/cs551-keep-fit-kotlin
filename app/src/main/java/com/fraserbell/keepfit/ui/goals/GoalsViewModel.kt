@@ -23,6 +23,7 @@ class GoalsViewModel @Inject constructor(
     val scaffoldState = mutableStateOf(ScaffoldState(DrawerState(DrawerValue.Closed) { false }, SnackbarHostState()))
 
     val goals = goalsRepository.getAllGoals()
+    val activeGoal = goalsRepository.getActiveGoalId()
     val allowEditing = dataStoreManager.goalsEditable
 
     fun deleteGoalAsync(goal:Goal) = viewModelScope.async {
