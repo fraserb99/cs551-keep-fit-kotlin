@@ -9,6 +9,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import androidx.room.Room
 import com.fraserbell.keepfit.data.AppDatabase
 import com.fraserbell.keepfit.data.entities.Goal

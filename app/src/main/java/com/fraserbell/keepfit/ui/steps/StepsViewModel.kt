@@ -35,7 +35,10 @@ class StepsViewModel @Inject constructor(
     private val currentAllowHistoryRec = mutableStateOf(false)
     val goals = goalsRepository.getAllGoals()
 
-    val scaffoldState = mutableStateOf(ScaffoldState(DrawerState(DrawerValue.Closed) { false }, SnackbarHostState()))
+    val scaffoldState = mutableStateOf(ScaffoldState(
+        DrawerState(DrawerValue.Closed) { false },
+        SnackbarHostState()
+    ))
     @ExperimentalPagerApi
     val pagerState = mutableStateOf(PagerState(Int.MAX_VALUE, 0))
     @ExperimentalPagerApi

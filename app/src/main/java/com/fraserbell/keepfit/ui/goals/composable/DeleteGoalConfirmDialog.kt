@@ -12,25 +12,14 @@ import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
 @Composable
-fun DeleteGoalConfirmDialog (onDelete: () -> Deferred<Unit>, onCancel: () -> Unit) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
+fun DeleteGoalConfirmDialog (onDelete: () -> Unit, onCancel: () -> Unit) {
     AlertDialog(
         onDismissRequest = onCancel,
         title = { Text("Are you sure you want to delete this Goal?") },
         confirmButton = {
             Button(
                 onClick = {
-                    scope.launch {
-                        try {
-                            onDelete().await()
-                            onCancel()
-                        } catch (e: Exception) {
-                            print("Caught exception")
-                            Toast.makeText(context, "There was an error, please try again", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                    onDelete()
                 },
                 colors = ButtonDefaults
                     .buttonColors(backgroundColor = MaterialTheme.colors.error)

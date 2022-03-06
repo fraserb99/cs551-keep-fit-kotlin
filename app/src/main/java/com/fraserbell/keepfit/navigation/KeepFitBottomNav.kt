@@ -6,8 +6,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -21,6 +23,7 @@ import com.fraserbell.keepfit.ui.history.HistoryScreen
 import com.fraserbell.keepfit.ui.settings.SettingsScreen
 import com.fraserbell.keepfit.ui.steps.StepsScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.time.LocalDate
 
 val items = listOf(Screen.Goals, Screen.Steps, Screen.History)
@@ -34,6 +37,12 @@ fun KeepFitBottomNav() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val currentScreen = items.find { it.route == currentDestination?.route }
+    val systemUiController = rememberSystemUiController()
+    val statusBarColour =
+        if (MaterialTheme.colors.isLight)
+            MaterialTheme.colors.primary
+        else MaterialTheme.colors.primarySurface
+
 
     Scaffold(
         topBar = {
@@ -94,5 +103,10 @@ fun KeepFitBottomNav() {
                 HistoryScreen(navController)
             }
         }
+    }
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = statusBarColour
+        )
     }
 }

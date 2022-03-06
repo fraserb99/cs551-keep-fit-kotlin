@@ -22,14 +22,27 @@ class GoalsViewModel @Inject constructor(
     var goalToDelete = mutableStateOf<Goal?>(null)
     var currentOpenItem = mutableStateOf<Int?>(null)
 
-    val scaffoldState = mutableStateOf(ScaffoldState(DrawerState(DrawerValue.Closed) { false }, SnackbarHostState()))
+    val scaffoldState = mutableStateOf(ScaffoldState(
+        DrawerState(DrawerValue.Closed) { false },
+        SnackbarHostState()
+    ))
 
     val goals = goalsRepository.getAllGoals()
     val activeGoal = goalsRepository.getActiveGoalId()
     val allowEditing = dataStoreManager.goalsEditable
 
-    fun deleteGoalAsync(goal:Goal) = viewModelScope.async {
+    fun deleteGoalAsync(goal:Goal) = viewModelScope.launch {
         goalsRepository.delete(goal)
+        goalToDelete.value = null
+        currentOpenItem.value = null
+        val res = scaffoldState.value.snackbarHostState.showSnackbar(
+            "Goal Deleted",
+            "Undo"
+        )
+
+        if (res == SnackbarResult.ActionPerformed) {
+            goalsRepository.add(goal)
+        }
     }
 
     fun addGoalAsync(goal: Goal) = viewModelScope.async {
