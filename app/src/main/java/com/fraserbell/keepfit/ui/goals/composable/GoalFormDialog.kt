@@ -32,7 +32,8 @@ fun GoalFormDialog(
     initialValues: GoalFormValues = GoalFormValues(""),
     onSave: (values: GoalFormValues) -> Unit,
     onCancel: () -> Unit,
-    checkNameExists: (name: String) -> Deferred<Boolean>
+    checkNameExists: (name: String) -> Deferred<Boolean>,
+    autoFocus: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
 
@@ -133,6 +134,7 @@ fun GoalFormDialog(
     )
 
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        delay(50)
+        if (autoFocus) focusRequester.requestFocus()
     }
 }

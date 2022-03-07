@@ -29,7 +29,12 @@ class GoalsViewModel @Inject constructor(
 
     val goals = goalsRepository.getAllGoals()
     val activeGoal = goalsRepository.getActiveGoalId()
+    private val currentActiveGoal = mutableStateOf<Int?>(null)
     val allowEditing = dataStoreManager.goalsEditable
+
+    init {
+        collectActiveGoal()
+    }
 
     fun deleteGoalAsync(goal:Goal) = viewModelScope.launch {
         goalsRepository.delete(goal)
@@ -69,13 +74,17 @@ class GoalsViewModel @Inject constructor(
     }
 
     fun onDeleteClicked(goal: Goal) = viewModelScope.launch {
+        if (currentActiveGoal.value == goal.goalId) {
+            currentOpenItem.value = null
+            scaffoldState.value.snackbarHostState.showSnackbar("Cannot delete the currently active goal")
+        } else {
+            goalToDelete.value = goal
+        }
+    }
+
+    private fun collectActiveGoal() = viewModelScope.launch {
         activeGoal.collect { activeId ->
-            if (activeId == goal.goalId) {
-                currentOpenItem.value = null
-                scaffoldState.value.snackbarHostState.showSnackbar("Cannot delete the currently active goal")
-            } else {
-                goalToDelete.value = goal
-            }
+            currentActiveGoal.value = activeId
         }
     }
 }

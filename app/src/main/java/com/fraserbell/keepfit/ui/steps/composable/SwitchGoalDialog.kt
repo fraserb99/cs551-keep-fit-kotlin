@@ -71,11 +71,7 @@ fun SwitchGoalDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("Switch Goal")
-                            Surface(
-                                Modifier
-                                    .clickable { onCancel() },
-                                shape = MaterialTheme.shapes.medium
-                            ) {
+                            IconButton(onClick = { onCancel() }) {
                                 Icon(
                                     modifier = Modifier.padding(8.dp),
                                     imageVector = Icons.Rounded.Close,

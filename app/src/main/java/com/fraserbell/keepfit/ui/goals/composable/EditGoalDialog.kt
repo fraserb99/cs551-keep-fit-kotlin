@@ -42,7 +42,8 @@ fun EditGoalDialog(
             },
             onCancel = onCancel,
             initialValues = GoalFormValues(goal.name, goal.stepGoal),
-            checkNameExists = { name -> checkNameExists(name, goal.goalId) }
+            checkNameExists = { name -> checkNameExists(name, goal.goalId) },
+            autoFocus = false
         )
     }
 }

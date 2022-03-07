@@ -121,7 +121,11 @@ fun HistoryCard(
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(30.dp)
-                            .background(if (steps?.goal != null) getProgressColour(progress) else Color.Transparent)
+                            .background(
+                                if (steps?.goal != null) getProgressColour(progress)
+                                else if (steps?.steps != null) Color.LightGray
+                                else Color.Transparent
+                            )
                     )
                     Column(
                         Modifier.padding(8.dp),
@@ -200,7 +204,7 @@ fun HistoryCard(
                             ),
                             onClick = { navController.navigate("steps?initialDate=${currentDate.toEpochDay()}") }
                         ) {
-                            Text("View")
+                            Text("Edit")
                             Icon(Icons.Rounded.ArrowForward, contentDescription = "view")
                         }
                     }
@@ -259,10 +263,10 @@ fun DayContent(dayState: DayState<DynamicSelectionState>, stepsState: Flow<Daily
                     )
                 )
             )
-            if (stepGoal != null) {
+            if (steps != null) {
                 Divider(
                     Modifier.align(Alignment.BottomCenter),
-                    color = getProgressColour(progress),
+                    color = if (stepGoal != null) getProgressColour(progress) else Color.LightGray,
                     thickness = 8.dp
                 )
             }
